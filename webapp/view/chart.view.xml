@@ -1,0 +1,12 @@
+<mvc:View controllerName="com.softtek.Chart.controller.chart" xmlns:viz="sap.viz.ui5.controls" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc"
+	displayBlock="true" xmlns="sap.m">
+	<App id="idAppControl">
+		<pages>
+			<Page title="{i18n>title}">
+				<content>
+					<viz:VizFrame id="idcolumn" width="100%"/>
+				</content>
+			</Page>
+		</pages>
+	</App>
+</mvc:View>
