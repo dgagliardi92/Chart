@@ -3,36 +3,31 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel"
 ], function (Controller,JSONModel) {
 	"use strict";
-
+	
 	return Controller.extend("com.softtek.Chart.controller.chart", {
+
 		onInit: function () {
-			var vAbiertos = "pepe";
-			var vCerrados = "2";
 			
-			var vData={ abiertos: "124", cerrados: "3" };
-			
-			//var oModel = new JSONModel({ "TicketsDG": [ { abiertos: "124", cerrados: 3 } ] });
-            //oModel.setData(vData);
-            //this.getView().setModel(oModel, "TicketsDG");
-            
 			//this.mapingOData(this.getView().byId("idcolumn2"));
-			this.mapingOData(this.getView().byId("idcolumn"));
+			this.mapingOData(this, this.getView().byId("idcolumn"));
 			//this.maping(this.getView().byId("idcolumn"));
 
 		},
 
-		mapingOData: function (oFrame) {
+		mapingOData: function (that, oFrame) {
 			
-			//var oModel = new JSONModel( { "DAAATA": [ { 'abiertos': "124", 'cerrados': "3" } ] } );
+			var vAbiertos = 38;
+			var vCerrados = 62;
+
 			var oModel = new JSONModel( { 'Data' : [ 
 				{
-					nombre: "Parker",
-    				valor: 5,
+					nombre: "Abiertos",
+    				valor: vAbiertos,
     				otro: 1
 				},
 				{
-					nombre: "Spider",
-    				valor: 3,
+					nombre: "Cerrados",
+    				valor: vCerrados,
     				otro: 2
 				}] } );
 			
@@ -46,20 +41,23 @@ sap.ui.define([
 					name: 'valor',
 					value: '{valor}'
 				}
-				/*,
+				,
 				{
 					name: 'otro',
 					value: '{otro}'
-				}*/
+				}
 				],
 				data : {
 					path: "/Data"
 				}
 			});
+			
 			oFrame.setDataset(oDataSet);
 			oFrame.setModel(oModel);
+			this.getView().byId("idDonutChart").setModel(oModel);
 			
-			oFrame.setVizType('bar');
+			
+			oFrame.setVizType('stacked_bar');
 			
 
 			oFrame.setVizProperties({
@@ -68,7 +66,7 @@ sap.ui.define([
 				},
 				title: {
 					visible: "true",
-					text: "TITULOSUPERCOOL"
+					text: "Tickets"
 
 				}
 			});
@@ -76,8 +74,8 @@ sap.ui.define([
 			var feedValueAxis = new sap.viz.ui5.controls.common.feeds.FeedItem({
 				'uid': "valueAxis",
 				'type': "Measure",
-				//'values': ["valor","otro"]
-				'values': ["valor"]
+				'values': ["valor","otro"]
+			//'values': ["valor"]
 			});
 
 			var feedCategoryAxis = new sap.viz.ui5.controls.common.feeds.FeedItem({

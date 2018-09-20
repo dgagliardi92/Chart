@@ -1,38 +1,53 @@
-<mvc:View 
-	controllerName="com.softtek.Chart.controller.chart" 
+<mvc:View controllerName="com.softtek.Chart.controller.chart" 
 	xmlns:viz="sap.viz.ui5.controls" 
 	xmlns:viz.data="sap.viz.ui5.data"
-	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" 
 	xmlns:html="http://www.w3.org/1999/xhtml" 
 	xmlns:mvc="sap.ui.core.mvc"
-	xmlns:micro="sap.suite.ui.microchart"
-	xmlns:layout="sap.ui.layout"
-	displayBlock="true" 
-	xmlns="sap.m">
+	xmlns:micro="sap.suite.ui.microchart" xmlns:layout="sap.ui.layout" displayBlock="true" xmlns="sap.m">
 	<App id="idAppControl">
 		<pages>
 			<Page title="{i18n>title}">
 				<content>
 					<viz:VizFrame id="idcolumn" width="50%"/>
 					
-					<viz:VizFrame id="idVizFrame" uiConfig="{applicationSet:'fiori'}" height='100%' width="100%" vizType='pie'>
-						
-		                <viz:dataset>
-		                    <viz.data:FlattenedDataset data="{/TicketsDG}">
-		                        <viz.data:dimensions>
-		                            <viz.data:DimensionDefinition name="Abiertos" value="{abiertos}" />
-		                        </viz.data:dimensions>
-		                        <viz.data:measures>
-		                            <viz.data:MeasureDefinition name="Cerrados" value="{cerrados}" />
-		                        </viz.data:measures>
-		                    </viz.data:FlattenedDataset>
-		                </viz:dataset>
-
-                <viz:feeds>
-                    <viz.feeds:FeedItem uid="size" type="Measure" values="abiertos" />
-                    <viz.feeds:FeedItem uid="color" type="Dimension" values="cerrados" />
-                </viz:feeds>
-            </viz:VizFrame>
+					<!--<viz:VizFrame id="idVizFrame" uiConfig="{applicationSet:'fiori'}" height='100%' width="100%" vizType='stacked_bar'>
+						<viz:dataset>
+							<viz.data:FlattenedDataset data="{/Data}">
+								<viz.data:dimensions>
+									<viz.data:DimensionDefinition name="Nombre" value="{nombre}"/>
+								</viz.data:dimensions>
+								<viz.data:measures>
+									<viz.data:MeasureDefinition name="Valor" value="{valor}"/>
+									<viz.data:MeasureDefinition name="Otro" value="{otro}"/>
+								</viz.data:measures>
+							</viz.data:FlattenedDataset>
+						</viz:dataset>
+						<viz:feeds>
+							<viz.feeds:FeedItem uid="size" type="Measure" values="['valor','otro']"/>
+							<viz.feeds:FeedItem uid="color" type="Dimension" values="['nombre']"/>
+						</viz:feeds>
+					</viz:VizFrame>-->
+					
+					
+					
+					<viz:VizFrame xmlns="sap.viz" id="idDonutChart" vizType="donut" width="100%" height="100%"
+						vizProperties="{plotArea: { drawingEffect: 'glossy' },title:{ text:'Donut Chart Example'}}">
+						<viz:dataset>
+							<viz.data:FlattenedDataset data="{/Data}">
+								<viz.data:dimensions>
+									<viz.data:DimensionDefinition name="Nombre" value="{nombre}"/>
+								</viz.data:dimensions>
+								<viz.data:measures>
+									<viz.data:MeasureDefinition name="Valor" value="{valor}"/>
+								</viz.data:measures>
+							</viz.data:FlattenedDataset>
+						</viz:dataset>
+						<viz:feeds>
+							<viz.feeds:FeedItem uid="size" type="Measure" values='Valor'/>
+							<viz.feeds:FeedItem uid="color" type="Dimension" values="Nombre"/>
+						</viz:feeds>
+					</viz:VizFrame>
 					
 					
 					
@@ -43,7 +58,7 @@
 					
 					
 					
-					<FlexBox width="20rem" height="10rem"  justifyContent="SpaceBetween">
+					<FlexBox width="20rem" height="10rem" justifyContent="SpaceBetween">
 						<items>
 							<micro:InteractiveDonutChart selectionChanged="onSelectionChanged">
 								<micro:segments>
@@ -54,20 +69,20 @@
 							</micro:InteractiveDonutChart>
 						</items>
 					</FlexBox>
-					
-				
 					<Table items="{ path: '/TicketsAbiertosSet' }">
-				    	<columns>
+						<columns>
 							<Column id="nameColumn">
 								<Text text="{i18n>tableNameColumnTitle}" id="nameColumnTitle"/>
 							</Column>
 						</columns>
 						<items>
 							<ColumnListItem type="Navigation" press="onPress">
-								<cells> <ObjectIdentifier title="{Ticket}"/> </cells>
+								<cells>
+									<ObjectIdentifier title="{Ticket}"/>
+								</cells>
 							</ColumnListItem>
 						</items>
-				    </Table>
+					</Table>
 				</content>
 			</Page>
 		</pages>
