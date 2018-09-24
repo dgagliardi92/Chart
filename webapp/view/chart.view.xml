@@ -1,17 +1,77 @@
-<mvc:View controllerName="com.softtek.Chart.controller.chart" 
-	xmlns:viz="sap.viz.ui5.controls" 
-	xmlns:viz.data="sap.viz.ui5.data"
-	xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds" 
-	xmlns:html="http://www.w3.org/1999/xhtml" 
-	xmlns:mvc="sap.ui.core.mvc"
-	xmlns:micro="sap.suite.ui.microchart" xmlns:layout="sap.ui.layout" displayBlock="true" xmlns="sap.m">
-	<App id="idAppControl">
+<mvc:View xmlns:viz="sap.viz.ui5.controls" xmlns:core="sap.ui.core" xmlns:micro2="sap.ui.comp.smartmicrochart"
+	xmlns:commons="sap.suite.ui.commons" xmlns:viz.data="sap.viz.ui5.data" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+	xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc" xmlns:micro="sap.suite.ui.microchart" xmlns:layout="sap.ui.layout"
+	xmlns:f="sap.ui.layout.form" xmlns="sap.m" controllerName="com.softtek.Chart.controller.chart" displayBlock="true">
+	<App>
 		<pages>
 			<Page title="{i18n>title}">
 				<content>
-					<viz:VizFrame id="idcolumn" width="50%"/>
-					
-					<!--<viz:VizFrame id="idVizFrame" uiConfig="{applicationSet:'fiori'}" height='100%' width="100%" vizType='stacked_bar'>
+					<layout:Splitter width="100%" height="40%">
+						<layout:Splitter>
+							<layout:contentAreas>
+								<commons:ChartContainer id="chartContain23" showFullScreen="false" showPersonalization="false" autoAdjustHeight="true">
+									<commons:content>
+										<commons:ChartContainerContent icon="sap-icon://line-chart">
+											<commons:content>
+												<viz:VizFrame id="idcolumn" width="100%" height="100%"/>
+											</commons:content>
+										</commons:ChartContainerContent>
+									</commons:content>
+								</commons:ChartContainer>
+							</layout:contentAreas>
+						</layout:Splitter>
+						<layout:Splitter>
+							<layout:contentAreas>
+								<commons:ChartContainer id="chartContainer" showPersonalization="false" autoAdjustHeight="true">
+									<commons:content>
+										<commons:ChartContainerContent >
+											<commons:content>
+												<viz:VizFrame xmlns="sap.viz" id="idDonutChart" vizType="donut" width="25%" height="25%"
+													vizProperties="{plotArea: { drawingEffect: 'glossy' },title:{ text:'Estado de los Tickets'}}">
+													<viz:dataset>
+														<viz.data:FlattenedDataset data="{/Data}">
+															<viz.data:dimensions>
+																<viz.data:DimensionDefinition name="Nombre" value="{nombre}"/>
+															</viz.data:dimensions>
+															<viz.data:measures>
+																<viz.data:MeasureDefinition name="Valor" value="{valor}"/>
+															</viz.data:measures>
+														</viz.data:FlattenedDataset>
+													</viz:dataset>
+													<viz:feeds>
+														<viz.feeds:FeedItem uid="size" type="Measure" values="Valor"/>
+														<viz.feeds:FeedItem uid="color" type="Dimension" values="Nombre"/>
+													</viz:feeds>
+												</viz:VizFrame>
+											</commons:content>
+										</commons:ChartContainerContent>
+									</commons:content>
+								</commons:ChartContainer>
+							</layout:contentAreas>
+						</layout:Splitter>
+						<layout:Splitter>
+							<layout:contentAreas>
+								<commons:ChartContainer id="cont3" showFullScreen="false" showPersonalization="false" autoAdjustHeight="false">
+									<commons:content>
+										<commons:ChartContainerContent>
+											<commons:content>
+												<Panel id="panel2" headerText="{/Titulo}">
+													
+													<micro:RadialMicroChart id="radial" size="Auto"/>
+													<Text id="textcont" renderWhitespace="true"/>
+													<Text id="textcons"/>
+												</Panel>
+											</commons:content>
+										</commons:ChartContainerContent>
+									</commons:content>
+								</commons:ChartContainer>
+							</layout:contentAreas>
+						</layout:Splitter>
+					</layout:Splitter>
+					<layout:Splitter width="100%" height="60%">
+						<!--<viz:Popover id="idPopOver5"></viz:Popover>
+						<viz:VizFrame id="idcolumn" width="100%" height="100%"/>-->
+						<!--<viz:VizFrame id="idVizFrame" uiConfig="{applicationSet:'fiori'}" height='100%' width="100%" vizType='stacked_bar'>
 						<viz:dataset>
 							<viz.data:FlattenedDataset data="{/Data}">
 								<viz.data:dimensions>
@@ -28,61 +88,22 @@
 							<viz.feeds:FeedItem uid="color" type="Dimension" values="['nombre']"/>
 						</viz:feeds>
 					</viz:VizFrame>-->
-					
-					
-					
-					<viz:VizFrame xmlns="sap.viz" id="idDonutChart" vizType="donut" width="100%" height="100%"
-						vizProperties="{plotArea: { drawingEffect: 'glossy' },title:{ text:'Donut Chart Example'}}">
-						<viz:dataset>
-							<viz.data:FlattenedDataset data="{/Data}">
-								<viz.data:dimensions>
-									<viz.data:DimensionDefinition name="Nombre" value="{nombre}"/>
-								</viz.data:dimensions>
-								<viz.data:measures>
-									<viz.data:MeasureDefinition name="Valor" value="{valor}"/>
-								</viz.data:measures>
-							</viz.data:FlattenedDataset>
-						</viz:dataset>
-						<viz:feeds>
-							<viz.feeds:FeedItem uid="size" type="Measure" values='Valor'/>
-							<viz.feeds:FeedItem uid="color" type="Dimension" values="Nombre"/>
-						</viz:feeds>
-					</viz:VizFrame>
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					
-					<FlexBox width="20rem" height="10rem" justifyContent="SpaceBetween">
-						<items>
-							<micro:InteractiveDonutChart selectionChanged="onSelectionChanged">
-								<micro:segments>
-									<micro:InteractiveDonutChartSegment label="Implementation Phase" value="40.0" displayedValue="40.0%" color="Error"/>
-									<micro:InteractiveDonutChartSegment label="Design Phase" value="21.5" displayedValue="21.5%" color="Critical"/>
-									<micro:InteractiveDonutChartSegment label="Test Phase" value="38.5" displayedValue="38.5%" color="Good"/>
-								</micro:segments>
-							</micro:InteractiveDonutChart>
-						</items>
-					</FlexBox>
-					<Table items="{ path: '/TicketsAbiertosSet' }">
-						<columns>
-							<Column id="nameColumn">
-								<Text text="{i18n>tableNameColumnTitle}" id="nameColumnTitle"/>
-							</Column>
-						</columns>
-						<items>
-							<ColumnListItem type="Navigation" press="onPress">
-								<cells>
-									<ObjectIdentifier title="{Ticket}"/>
-								</cells>
-							</ColumnListItem>
-						</items>
-					</Table>
+						<Table items="{ path: '/TicketsAbiertosSet' }">
+							<columns>
+								<Column id="nameColumn">
+									<Text text="{i18n>tableNameColumnTitle}" id="nameColumnTitle"/>
+								</Column>
+							</columns>
+							<items>
+								<!--<ColumnListItem type="Navigation" press="onPress">-->
+								<ColumnListItem >
+									<cells>
+										<ObjectIdentifier title="{Ticket}"/>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+					</layout:Splitter>
 				</content>
 			</Page>
 		</pages>
