@@ -1,7 +1,8 @@
-<edmx:Edmx xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
-	xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData" Version="1.0">
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+	xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
 	<edmx:DataServices m:DataServiceVersion="2.0">
-		<Schema xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="ZSM_ANALYTICS_SRV" xml:lang="es" sap:schema-version="1">
+		<Schema Namespace="ZSM_ANALYTICS_SRV" xml:lang="es" sap:schema-version="1" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
 			<EntityType Name="TicketsAbiertos" sap:label="Tickets Abiertos" sap:content-version="1">
 				<Key><PropertyRef Name="Ticket"/></Key><Property Name="Ticket" Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Ticket" sap:creatable="false" sap:updatable="false"/><Property Name="Descripcion" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="Descripción" sap:creatable="false"
 					sap:updatable="false"/><Property Name="Estado" Type="Edm.String" Nullable="false" MaxLength="30" sap:label="Estado" sap:creatable="false" sap:updatable="false"/><Property Name="Lado" Type="Edm.String" Nullable="false" MaxLength="20" sap:label="Lado" sap:creatable="false" sap:updatable="false"/><Property Name="FechaCreacion" Type="Edm.String" Nullable="false" MaxLength="8" sap:label="Fecha Creación" sap:creatable="false"
@@ -18,6 +19,10 @@
 					sap:updatable="false" sap:sortable="false" sap:filterable="false"/></EntityType>
 			<EntityContainer Name="ZSM_ANALYTICS_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx"><EntitySet Name="TicketsAbiertosSet" EntityType="ZSM_ANALYTICS_SRV.TicketsAbiertos" sap:label="Tickets Abiertos" sap:creatable="false"
 				sap:updatable="false" sap:deletable="false" sap:searchable="true" sap:addressable="false" sap:content-version="1"/><EntitySet Name="AbonoSet" EntityType="ZSM_ANALYTICS_SRV.DatosAbono" sap:creatable="false" sap:updatable="false" sap:deletable="false"
-				sap:pageable="false" sap:addressable="false" sap:content-version="1"/></EntityContainer><atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="self" href="./sap/ZSM_ANALYTICS_SRV/$metadata"/><atom:link xmlns:atom="http://www.w3.org/2005/Atom" rel="latest-version" href="./sap/ZSM_ANALYTICS_SRV/$metadata"/></Schema>
+				sap:pageable="false" sap:addressable="false" sap:content-version="1"/></EntityContainer><atom:link rel="self"
+				href="https://webidecp-p1941931557trial.dispatcher.hanatrial.ondemand.com/destinations/SSD/sap/opu/odata/sap/ZSM_ANALYTICS_SRV/$metadata"
+				xmlns:atom="http://www.w3.org/2005/Atom"/><atom:link rel="latest-version"
+				href="https://webidecp-p1941931557trial.dispatcher.hanatrial.ondemand.com/destinations/SSD/sap/opu/odata/sap/ZSM_ANALYTICS_SRV/$metadata"
+				xmlns:atom="http://www.w3.org/2005/Atom"/></Schema>
 	</edmx:DataServices>
 </edmx:Edmx>

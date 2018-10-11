@@ -19,7 +19,15 @@
 				"type": "OData",
 				"settings": {
 					"odataVersion": "2.0",
-					"localUri": "localService/metadata.xml"
+					"localUri": "localService/metadata.xml",
+					"annotations": []
+				}
+			},
+			"": {
+				"uri": "",
+				"type": "ODataAnnotation",
+				"settings": {
+					"localUri": ""
 				}
 			}
 		}
@@ -39,10 +47,7 @@
 			"tablet": true,
 			"phone": true
 		},
-		"supportedThemes": [
-			"sap_hcb",
-			"sap_belize"
-		]
+		"supportedThemes": ["sap_hcb", "sap_belize"]
 	},
 	"sap.ui5": {
 		"rootView": {
@@ -80,24 +85,22 @@
 					"defaultBindingMode": "OneWay"
 				}
 			},
-			"": {
+			"Tickets2": {
 				"uri": "/sap/opu/odata/sap/ZSM_ANALYTICS_SRV/",
 				"type": "sap.ui.model.odata.v2.ODataModel",
 				"settings": {
 					"defaultOperationMode": "Server",
-					"defaultBindingMode": "OneWay",
-					"defaultCountMode": "Request"
+					"defaultBindingMode": "TwoWay",
+					"defaultCountMode": "Both"
 				},
 				"dataSource": "ZSM_ANALYTICS_SRV",
 				"preload": true
 			}
 		},
 		"resources": {
-			"css": [
-				{
-					"uri": "css/style.css"
-				}
-			]
+			"css": [{
+				"uri": "css/style.css"
+			}]
 		},
 		"routing": {
 			"config": {
@@ -109,15 +112,11 @@
 				"controlId": "idAppControl",
 				"clearControlAggregation": false
 			},
-			"routes": [
-				{
-					"name": "Routechart",
-					"pattern": "Routechart",
-					"target": [
-						"Targetchart"
-					]
-				}
-			],
+			"routes": [{
+				"name": "Routechart",
+				"pattern": "Routechart",
+				"target": ["Targetchart"]
+			}],
 			"targets": {
 				"Targetchart": {
 					"viewType": "XML",

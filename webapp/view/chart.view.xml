@@ -1,7 +1,8 @@
 <mvc:View xmlns:viz="sap.viz.ui5.controls" xmlns:core="sap.ui.core" xmlns:micro2="sap.ui.comp.smartmicrochart"
 	xmlns:commons="sap.suite.ui.commons" xmlns:viz.data="sap.viz.ui5.data" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
-	xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc" xmlns:micro="sap.suite.ui.microchart" xmlns:layout="sap.ui.layout"
-	xmlns:f="sap.ui.layout.form" xmlns="sap.m" controllerName="com.softtek.Chart.controller.chart" displayBlock="true">
+	xmlns:html="http://www.w3.org/1999/xhtml" xmlns:semantic="sap.f.semantic" xmlns:mvc="sap.ui.core.mvc" xmlns:micro="sap.suite.ui.microchart"
+	xmlns:layout="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns="sap.m" controllerName="com.softtek.Chart.controller.chart"
+	displayBlock="true">
 	<App>
 		<pages>
 			<Page title="{i18n>title}">
@@ -9,7 +10,7 @@
 					<layout:Splitter width="100%" height="40%">
 						<layout:Splitter>
 							<layout:contentAreas>
-								<commons:ChartContainer id="chartContain23" showFullScreen="false" showPersonalization="false" autoAdjustHeight="true">
+								<commons:ChartContainer id="chartContain23" showZoom="false" showFullScreen="true" showPersonalization="false" autoAdjustHeight="true">
 									<commons:content>
 										<commons:ChartContainerContent icon="sap-icon://line-chart">
 											<commons:content>
@@ -22,12 +23,18 @@
 						</layout:Splitter>
 						<layout:Splitter>
 							<layout:contentAreas>
-								<commons:ChartContainer id="chartContainer" showPersonalization="false" autoAdjustHeight="true">
+								<commons:ChartContainer id="chartContainer" showZoom="false" showPersonalization="false" showFullScreen="true" autoAdjustHeight="true">
 									<commons:content>
 										<commons:ChartContainerContent >
 											<commons:content>
 												<viz:VizFrame xmlns="sap.viz" id="idDonutChart" vizType="donut" width="25%" height="25%"
-													vizProperties="{plotArea: { drawingEffect: 'glossy' },title:{ text:'Estado de los Tickets'}}">
+													vizProperties="{
+													plotArea: {  
+														dataLabel : { visible: true },
+														drawingEffect: 'glossy' 
+													}, 
+													title:{ text:'Estado de los Tickets'}
+													}">
 													<viz:dataset>
 														<viz.data:FlattenedDataset data="{/Data}">
 															<viz.data:dimensions>
@@ -51,12 +58,11 @@
 						</layout:Splitter>
 						<layout:Splitter>
 							<layout:contentAreas>
-								<commons:ChartContainer id="cont3" showFullScreen="false" showPersonalization="false" autoAdjustHeight="false">
+								<commons:ChartContainer id="cont3" showFullScreen="true" showZoom="false" showPersonalization="false" autoAdjustHeight="true">
 									<commons:content>
 										<commons:ChartContainerContent>
 											<commons:content>
 												<Panel id="panel2" headerText="{/Titulo}">
-													
 													<micro:RadialMicroChart id="radial" size="Auto"/>
 													<Text id="textcont" renderWhitespace="true"/>
 													<Text id="textcons"/>
@@ -69,42 +75,60 @@
 						</layout:Splitter>
 					</layout:Splitter>
 					<layout:Splitter width="100%" height="60%">
-						<!--<viz:Popover id="idPopOver5"></viz:Popover>
-						<viz:VizFrame id="idcolumn" width="100%" height="100%"/>-->
-						<!--<viz:VizFrame id="idVizFrame" uiConfig="{applicationSet:'fiori'}" height='100%' width="100%" vizType='stacked_bar'>
-						<viz:dataset>
-							<viz.data:FlattenedDataset data="{/Data}">
-								<viz.data:dimensions>
-									<viz.data:DimensionDefinition name="Nombre" value="{nombre}"/>
-								</viz.data:dimensions>
-								<viz.data:measures>
-									<viz.data:MeasureDefinition name="Valor" value="{valor}"/>
-									<viz.data:MeasureDefinition name="Otro" value="{otro}"/>
-								</viz.data:measures>
-							</viz.data:FlattenedDataset>
-						</viz:dataset>
-						<viz:feeds>
-							<viz.feeds:FeedItem uid="size" type="Measure" values="['valor','otro']"/>
-							<viz.feeds:FeedItem uid="color" type="Dimension" values="['nombre']"/>
-						</viz:feeds>
-					</viz:VizFrame>-->
-						<Table items="{ path: '/TicketsAbiertosSet' }">
-							<columns>
-								<Column id="nameColumn">
-									<Text text="{i18n>tableNameColumnTitle}" id="nameColumnTitle"/>
-								</Column>
-							</columns>
+						<IconTabBar id="iconTabBar" tabDensityMode="Compact" stretchContentHeight="true" select="handleIconTabBarSelect">
 							<items>
-								<!--<ColumnListItem type="Navigation" press="onPress">-->
-								<ColumnListItem >
-									<cells>
-										<ObjectIdentifier title="{Ticket}"/>
-									</cells>
-								</ColumnListItem>
+								<IconTabFilter showAll="true" count="{/Total}" text="Todo" key="All"/>
+								<IconTabSeparator/>
+								<IconTabFilter icon="sap-icon://time-entry-request" iconColor="Negative" count="{/tsa}" text="Sin Asignar" key="tsa"/>
+								<IconTabFilter icon="sap-icon://technical-object" iconColor="Critical" count="{/tep}" text="En Proceso" key="tep"/>
+								<IconTabFilter icon="sap-icon://away" iconColor="Positive" count="{/teer}" text="En Espera Resp." key="teer"/>
+								<IconTabFilter icon="sap-icon://detail-view" iconColor="Neutral" count="{/tpr}" text="En Pruebas" key="tpr"/>
 							</items>
-						</Table>
+							<content>
+								<ScrollContainer height="100%" width="100%" horizontal="false" vertical="true">
+									<!--<List items="{ path: '/TicketsAbiertosSet' }">
+										<StandardListItem title="{Ticket} - {Descripcion} - {Estado}"/>
+									</List>-->
+									<Table id="Table" growing="true" growingThreshold="100" growingScrollToLoad="true" updateFinished="cargartotales"
+										items="{ path: 'Tickets2>/TicketsAbiertosSet' }">
+									<!--<Table id="Table" growing="true" growingThreshold="100" growingScrollToLoad="true" updateFinished="cargartotales"
+										items="{ path: 'Tickets/' }">-->
+										<columns>
+											<Column id="col_ticket">
+												<Text text="{i18n>ticket}" id="text_ticket"/>
+											</Column>
+											<Column id="col_descr">
+												<Text text="{i18n>descripcion}" id="text_descr"/>
+											</Column>
+											<Column id="col_estado">
+												<Text text="{i18n>estado}" id="text_estado"/>
+											</Column>
+										</columns>
+										<items>
+											<ColumnListItem type="Navigation" press="onPress">
+												<cells>
+													<ObjectIdentifier title="{Tickets2>Ticket}"/>
+												</cells>
+												<cells>
+													<ObjectIdentifier title="{Tickets2>Descripcion}"/>
+												</cells>
+												<cells>
+													<ObjectIdentifier title="{Tickets2>Estado}"/>
+												</cells>
+											</ColumnListItem>
+										</items>
+									</Table>
+								</ScrollContainer>
+							</content>
+						</IconTabBar>
 					</layout:Splitter>
 				</content>
+				<footer>
+					<OverflowToolbar id="otbFooter">
+						<ToolbarSpacer/>
+						<OverflowToolbarButton text="Filtros" press="filtrar" icon="sap-icon://filter"/>
+					</OverflowToolbar>
+				</footer>
 			</Page>
 		</pages>
 	</App>
