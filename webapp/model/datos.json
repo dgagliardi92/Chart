@@ -1,13 +1,7 @@
 {
-	"Cars": [
-		{
-			"Brand": "Argentina",
-			"Value": "1300"
-		},{
-			"Brand": "Brasil",
-			"Value": "1000"
-		},{
-			"Brand": "Chile",
-			"Value": "300"
-		}]
+	"Total": 0,
+	"tsa": 0,
+	"tep": 0,
+	"teer": 0,
+	"tpr": 0
 }

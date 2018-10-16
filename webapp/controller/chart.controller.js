@@ -5,16 +5,24 @@ sap.ui.define([
 	'sap/ui/model/FilterOperator'
 ], function (Controller, JSONModel, Filter, FilterOperator) {
 	"use strict";
-	
+
 	var ticketGlobal = [];
-	
+
 	return Controller.extend("com.softtek.Chart.controller.chart", {
-		
-		
+
 		onInit: function () {
 
-			this.mapingOData(this, this.getView().byId("idcolumn"));
-			this.dibujargrafico(600, 400);
+			this.dialog = new sap.m.BusyDialog({
+				id: 'dialog',
+				text: 'Cargando...'
+			});
+
+			this.dialog.open();
+
+			this.byId("iconTabBar").setModel(this.getOwnerComponent().getModel("Totales"));
+
+			this.dibujargrafico(0, 0, "");
+			this.mapingOData(1, 0, this.getView().byId("idcolumn"));
 
 			//var oModel = this.getOwnerComponent().getModel("Tickets");
 			//var oModel = this.getOwnerComponent().getModel("Tickets2");
@@ -35,17 +43,16 @@ sap.ui.define([
 			} );*/
 
 		},
-		
-		onBeforeRendering: function(oEvent){
-			
+
+		onBeforeRendering: function (oEvent) {
+
 			/*this.getOwnerComponent().getModel("Tickets2").attachEventOnce("batchRequestCompleted", this.onBatchRequestCompleted);
 			this.getOwnerComponent().getModel("Tickets2").read("/TicketsAbiertosSet");
 			this.getOwnerComponent().getModel("Tickets2").getProperty("/");*/
 			//this.getOwnerComponent().getModel("Tickets2").att
 		},
-		
+
 		batchRequestCompleted: function (oData) {
-			var ble = 2;
 			//var datos = oModel.getData("Tickets2");
 			//var oNewModel = oModel.getProperty("/TicketsAbiertosSet");
 			//var metaModel = oModel.getMetaModel( );
@@ -53,100 +60,174 @@ sap.ui.define([
 
 		},
 
-		/*funco: function (Tickets) {
-			var ble = 1;
+		OKAbonoSet: function (oData) {
 
-			var oTickets = Tickets;
-			sap.ui.getCore().setModel(Tickets, "Tickets");
-			this.getView().byId("Table").setModel(Tickets, "Tickets");
+			var Tickets = new sap.ui.model.json.JSONModel(oData.results);
+			var oticket = Tickets.getProperty("/0/");
 
-		},*/
+			this.dibujargrafico(oticket.Abono, oticket.Consumido, oticket.Periodo);
 
-		onAfterRendering: function () {},
-		
-		
-		cargartotales: function (oEvent) {
+			var oModel = this.getView().byId("idcolumn").getModel();
 
-			var oModel = this.getOwnerComponent().getModel("Tickets2");
-			
-			ticketGlobal = this.getOwnerComponent().getModel("Tickets2").getData("/");
-			this.getView().byId("Table").setModel(ticketGlobal, "Tickets");
+			oticket.Consumido = 20;
 
-			var listadoTickets = Object.getOwnPropertyNames(oModel.oData);
-			
-			var countTickets = 0,
-				countTsa = 0,
-				countTep = 0,
-				countTeer = 0,
-				countTpr = 0;
+			//oModel.setProperty("/Consumo/0/consumido", oticket.Consumido );
+			//oModel.setProperty("/Consumo/0/restante", oticket.Abono - oticket.Consumido );
 
-			countTickets = Object.getOwnPropertyNames(oModel.oData).lenght;
-			
-			/*for (var i = 0; i < countTickets; i += 1) {
-				var Tickets = oModel.oData[listadoTickets[i]];
-			}*/
+			/*this.getView().byId("idcolumn").setModel(oModel);*/
 
-			if (listadoTickets instanceof Array) {
-				listadoTickets.forEach(function (element) {
-					if (!countTickets) {
-						countTickets = 0;
-						countTsa = 0;
-						countTep = 0;
-						countTeer = 0;
-						countTpr = 0;
-					}
-					var Tickets = oModel.oData[element];
-					countTickets = countTickets + 1;
-					switch (Tickets.Estado) {
-
-					case "Pendiente":
-						countTsa = countTsa + 1;
-						break;
-					case "Propuesta Enviada":
-						countTeer = countTeer + 1;
-						break;
-					case "Consulta Cliente":
-						countTeer = countTeer + 1;
-						break;
-					case "Prueba Cliente":
-						countTpr = countTpr + 1;
-						break;
-					case "Implementado":
-						countTpr = countTpr + 1;
-						break;
-					default:
-						countTep = countTep + 1;
-						break;
-					}
-				});
-
-			}
-
-			var oModelCount = new JSONModel({
-				Total: countTickets,
-				tsa: countTsa,
-				tep: countTep,
-				teer: countTeer,
-				tpr: countTpr,
+			var oModelConsumo = new JSONModel({
+				'Consumo': [{
+					nombre: "",
+					consumido: oticket.Consumido,
+					restante: oticket.Abono - oticket.Consumido
+				}]
 			});
 
-			this.getView().byId("iconTabBar").setModel(oModelCount);
-
-			
+			this.getView().byId("idcolumn").setModel(oModelConsumo);
 		},
 
-		dibujargrafico: function (consumido, restante) {
+		onAfterRendering: function () {},
+
+		cargartotales: function (oEvent) {
+
+			var oModel = this.getOwnerComponent().getModel("Tickets");
+			ticketGlobal = this.getOwnerComponent().getModel("Tickets").getData("/");
+
+			var listadoTickets = Object.getOwnPropertyNames(oModel.oData);
+			var oModelCount = this.byId("iconTabBar").getModel();
+
+			var oModelLados = {
+				Cliente: 0,
+				Softtek: 0,
+				Otros: 0,
+			};
+
+			if (listadoTickets instanceof Array) {
+				listadoTickets.forEach(jQuery.proxy(function (element) {
+					var oTicket = oModel.oData[element];
+					this.contarPorEstado(oTicket, oModelCount);
+					this.contarPorLado(oTicket, oModelLados);
+				}), this);
+			}
+
+			var oModelCount2 = new JSONModel({
+				Total: oModelCount.Total,
+				tsa: oModelCount.tsa,
+				tep: oModelCount.tep,
+				teer: oModelCount.teer,
+				tpr: oModelCount.tpr
+			});
+
+			//Busco el abono del cliente
+			oModel.read("/AbonoSet", {
+				success: jQuery.proxy(function (oData, Response) {
+					this.OKAbonoSet(oData);
+				}, this),
+				error: function (oEvent) {}
+			});
+
+			//Cargo el modelo Totales
+			this.getView().byId("iconTabBar").setModel(oModelCount2, "Totales");
+
+			this.dibujarBarra(oModelLados);
+
+			this.dialog.close();
+		},
+
+		contarPorLado: function (oTicket, oModelLado) {
+
+			if (!oModelLado.Cliente) {
+				oModelLado.Cliente = 0;
+				oModelLado.Softtek = 0;
+				oModelLado.Otros = 0;
+			}
+
+			switch (oTicket.Lado) {
+			case "Softtek":
+				oModelLado.Softtek = oModelLado.Softtek + 1;
+				break;
+			case "Cliente":
+				oModelLado.Cliente = oModelLado.Cliente + 1;
+				break;
+			default:
+				oModelLado.Otros = oModelLado.Otros + 1;
+				break;
+			}
+			return oModelLado;
+		},
+		contarPorEstado: function (oTicket, oModelCount) {
+
+			if (!oModelCount.Total) {
+				oModelCount.Total = 0;
+				oModelCount.tsa = 0;
+				oModelCount.tep = 0;
+				oModelCount.teer = 0;
+				oModelCount.tpr = 0;
+			}
+
+			oModelCount.Total = oModelCount.Total + 1;
+			switch (oTicket.Estado) {
+
+			case "Pendiente":
+				oModelCount.tsa = oModelCount.tsa + 1;
+				break;
+			case "Propuesta Enviada":
+				oModelCount.teer = oModelCount.teer + 1;
+				break;
+			case "Consulta Cliente":
+				oModelCount.teer = oModelCount.teer + 1;
+				break;
+			case "Prueba Cliente":
+				oModelCount.tpr = oModelCount.tpr + 1;
+				break;
+			case "Implementado":
+				oModelCount.tpr = oModelCount.tpr + 1;
+				break;
+			default:
+				oModelCount.tep = oModelCount.tep + 1;
+				break;
+			}
+			return oModelCount;
+		},
+
+		dibujarBarra: function (oLados) {
+
+			var oModel = new JSONModel({
+				'Data': [{
+					nombre: "Cliente",
+					valor: oLados.Cliente,
+					otro: 1
+				}, {
+					nombre: "Softtek",
+					valor: oLados.Softtek,
+					otro: 2
+				}, {
+					nombre: "Otros", //"SPS/PA/SAP",
+					valor: oLados.Otros,
+					otro: 3
+				}]
+			});
+
+			this.getView().byId("idDonutChart").setModel(oModel);
+
+		},
+
+		dibujargrafico: function (total, consumido, periodo) {
 
 			this.getView().byId("cont3").setTitle("Consumo Abono");
 
 			var oModel = new JSONModel({
-				"Titulo": "Periodo 09/2018"
+				"Titulo": "Periodo " + periodo
 			});
 
 			this.getView().byId("panel2").setModel(oModel);
+			var restante = total - consumido;
 
-			var vPorcentaje = consumido * 100 / (consumido + restante);
-
+			var vPorcentaje = 0;
+			if (consumido > 0) {
+				vPorcentaje = consumido * 100 / (total);
+			}
 			this.getView().byId("textcont").setText("Horas Contratadas: " + consumido);
 			this.getView().byId("textcons").setText("Horas Consumidas: " + restante);
 
@@ -187,12 +268,13 @@ sap.ui.define([
 
 		filtrar: function () {
 
-			var oModel = this.getView().getModel();
-			var someObj = oModel.oData;
+			/*var oModel = this.getView().getModel();*/
+
+			/*var someObj = oModel.oData;*/
 			//var someObj = sap.ui.getCore().getModel().getProperty("ZSM_ANALYTICS_SRV");
-			for (var i = 0; i < someObj.length; i++) {
+			/*for (var i = 0; i < someObj.length; i++) {
 				var obj = someObj[i];
-			}
+			}*/
 
 			/*oModel.getData("/TicketsAbiertosSet");
 			var items = this.byId("/TicketsAbiertosSet").getItems();    
@@ -203,36 +285,14 @@ sap.ui.define([
 
 		},
 
-		mapingOData: function (that, oFrame) {
-
-			var vCliente = 38;
-			var vSofttek = 62;
-			var vOtros = 62;
-
-			var vConsumido = 60;
-			var vRestante = 40;
+		mapingOData: function (vAbono, vConsumido, oFrame) {
+			var vRestante = vAbono - vConsumido;
 
 			var oModelConsumo = new JSONModel({
 				'Consumo': [{
 					nombre: "",
 					consumido: vConsumido,
 					restante: vRestante
-				}]
-			});
-
-			var oModel = new JSONModel({
-				'Data': [{
-					nombre: "Cliente",
-					valor: vCliente,
-					otro: 1
-				}, {
-					nombre: "Softtek",
-					valor: vSofttek,
-					otro: 2
-				}, {
-					nombre: "SPS/PA/SAP",
-					valor: vOtros,
-					otro: 3
 				}]
 			});
 
@@ -258,7 +318,6 @@ sap.ui.define([
 
 			oFrame.setDataset(oDataSet);
 			oFrame.setModel(oModelConsumo);
-			this.getView().byId("idDonutChart").setModel(oModel);
 
 			//oFrame.setVizType('stacked_bar');
 			//oFrame.setVizType('vertical_bullet');
@@ -273,6 +332,11 @@ sap.ui.define([
 						visible: true
 					},
 					colorPalette: d3.scale.category20().range()
+				},
+				gap: {
+					visible: true,
+					type: "positive",
+					positiveColor: 'sapUiChartPaletteSemanticGood'
 				},
 				title: {
 					visible: "false",

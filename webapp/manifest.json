@@ -73,7 +73,7 @@
 					"bundleName": "com.softtek.Chart.i18n.i18n"
 				}
 			},
-			"Model": {
+			"Totales": {
 				"type": "sap.ui.model.json.JSONModel",
 				"settings": {},
 				"uri": "model/datos.json",
@@ -85,7 +85,7 @@
 					"defaultBindingMode": "OneWay"
 				}
 			},
-			"Tickets2": {
+			"Tickets": {
 				"uri": "/sap/opu/odata/sap/ZSM_ANALYTICS_SRV/",
 				"type": "sap.ui.model.odata.v2.ODataModel",
 				"settings": {

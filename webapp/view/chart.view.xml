@@ -10,11 +10,11 @@
 					<layout:Splitter width="100%" height="40%">
 						<layout:Splitter>
 							<layout:contentAreas>
-								<commons:ChartContainer id="chartContain23" showZoom="false" showFullScreen="true" showPersonalization="false" autoAdjustHeight="true">
+								<commons:ChartContainer id="chartContain23" showZoom="false" showFullScreen="true" showPersonalization="false" autoAdjustHeight="false">
 									<commons:content>
 										<commons:ChartContainerContent icon="sap-icon://line-chart">
 											<commons:content>
-												<viz:VizFrame id="idcolumn" width="100%" height="100%"/>
+												<viz:VizFrame id="idcolumn" uiConfig="{applicationSet:'fiori'}" height='100%' width="100%"/>
 											</commons:content>
 										</commons:ChartContainerContent>
 									</commons:content>
@@ -28,13 +28,7 @@
 										<commons:ChartContainerContent >
 											<commons:content>
 												<viz:VizFrame xmlns="sap.viz" id="idDonutChart" vizType="donut" width="25%" height="25%"
-													vizProperties="{
-													plotArea: {  
-														dataLabel : { visible: true },
-														drawingEffect: 'glossy' 
-													}, 
-													title:{ text:'Estado de los Tickets'}
-													}">
+													vizProperties="{ plotArea: { dataLabel : { visible: true }, drawingEffect: 'glossy' }, title:{ text:'Estado de los Tickets'} }">
 													<viz:dataset>
 														<viz.data:FlattenedDataset data="{/Data}">
 															<viz.data:dimensions>
@@ -77,12 +71,12 @@
 					<layout:Splitter width="100%" height="60%">
 						<IconTabBar id="iconTabBar" tabDensityMode="Compact" stretchContentHeight="true" select="handleIconTabBarSelect">
 							<items>
-								<IconTabFilter showAll="true" count="{/Total}" text="Todo" key="All"/>
+								<IconTabFilter showAll="true" count="{Totales>/Total}" text="Todo" key="All"/>
 								<IconTabSeparator/>
-								<IconTabFilter icon="sap-icon://time-entry-request" iconColor="Negative" count="{/tsa}" text="Sin Asignar" key="tsa"/>
-								<IconTabFilter icon="sap-icon://technical-object" iconColor="Critical" count="{/tep}" text="En Proceso" key="tep"/>
-								<IconTabFilter icon="sap-icon://away" iconColor="Positive" count="{/teer}" text="En Espera Resp." key="teer"/>
-								<IconTabFilter icon="sap-icon://detail-view" iconColor="Neutral" count="{/tpr}" text="En Pruebas" key="tpr"/>
+								<IconTabFilter icon="sap-icon://time-entry-request" iconColor="Negative" count="{Totales>/tsa}" text="Sin Asignar" key="tsa"/>
+								<IconTabFilter icon="sap-icon://technical-object" iconColor="Critical" count="{Totales>/tep}" text="En Proceso" key="tep"/>
+								<IconTabFilter icon="sap-icon://away" iconColor="Positive" count="{Totales>/teer}" text="En Espera Resp." key="teer"/>
+								<IconTabFilter icon="sap-icon://detail-view" iconColor="Neutral" count="{Totales>/tpr}" text="En Pruebas" key="tpr"/>
 							</items>
 							<content>
 								<ScrollContainer height="100%" width="100%" horizontal="false" vertical="true">
@@ -90,8 +84,8 @@
 										<StandardListItem title="{Ticket} - {Descripcion} - {Estado}"/>
 									</List>-->
 									<Table id="Table" growing="true" growingThreshold="100" growingScrollToLoad="true" updateFinished="cargartotales"
-										items="{ path: 'Tickets2>/TicketsAbiertosSet' }">
-									<!--<Table id="Table" growing="true" growingThreshold="100" growingScrollToLoad="true" updateFinished="cargartotales"
+										items="{ path: 'Tickets>/TicketsAbiertosSet' }">
+										<!--<Table id="Table" growing="true" growingThreshold="100" growingScrollToLoad="true" updateFinished="cargartotales"
 										items="{ path: 'Tickets/' }">-->
 										<columns>
 											<Column id="col_ticket">
@@ -103,17 +97,23 @@
 											<Column id="col_estado">
 												<Text text="{i18n>estado}" id="text_estado"/>
 											</Column>
+											<Column id="col_lado">
+												<Text text="{i18n>lado}" id="text_lado"/>
+											</Column>
 										</columns>
 										<items>
 											<ColumnListItem type="Navigation" press="onPress">
 												<cells>
-													<ObjectIdentifier title="{Tickets2>Ticket}"/>
+													<ObjectIdentifier title="{Tickets>Ticket}"/>
 												</cells>
 												<cells>
-													<ObjectIdentifier title="{Tickets2>Descripcion}"/>
+													<ObjectIdentifier title="{Tickets>Descripcion}"/>
 												</cells>
 												<cells>
-													<ObjectIdentifier title="{Tickets2>Estado}"/>
+													<ObjectIdentifier title="{Tickets>Estado}"/>
+												</cells>
+												<cells>
+													<ObjectIdentifier title="{Tickets>Lado}"/>
 												</cells>
 											</ColumnListItem>
 										</items>
