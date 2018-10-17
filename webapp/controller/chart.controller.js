@@ -3,6 +3,7 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	'sap/ui/model/Filter',
 	'sap/ui/model/FilterOperator'
+	
 ], function (Controller, JSONModel, Filter, FilterOperator) {
 	"use strict";
 
@@ -45,7 +46,9 @@ sap.ui.define([
 		},
 
 		onBeforeRendering: function (oEvent) {
-
+			
+			this._initFilterView( );
+			
 			/*this.getOwnerComponent().getModel("Tickets2").attachEventOnce("batchRequestCompleted", this.onBatchRequestCompleted);
 			this.getOwnerComponent().getModel("Tickets2").read("/TicketsAbiertosSet");
 			this.getOwnerComponent().getModel("Tickets2").getProperty("/");*/
@@ -69,18 +72,23 @@ sap.ui.define([
 
 			var oModel = this.getView().byId("idcolumn").getModel();
 
-			oticket.Consumido = 20;
+			//oticket.Consumido = 20;
 
 			//oModel.setProperty("/Consumo/0/consumido", oticket.Consumido );
 			//oModel.setProperty("/Consumo/0/restante", oticket.Abono - oticket.Consumido );
 
 			/*this.getView().byId("idcolumn").setModel(oModel);*/
-
+			
+			//var vRestante = oticket.Abono - oticket.Consumido;
+			
+			/*var numberFormat = NumberFormat.getFloatInstance({maxFractionDigits:1});
+			var tRestante = numberFormat.format(vRestante);*/
+			
 			var oModelConsumo = new JSONModel({
 				'Consumo': [{
 					nombre: "",
 					consumido: oticket.Consumido,
-					restante: oticket.Abono - oticket.Consumido
+					restante: oticket.Abono - oticket.Consumido,
 				}]
 			});
 
@@ -100,14 +108,16 @@ sap.ui.define([
 			var oModelLados = {
 				Cliente: 0,
 				Softtek: 0,
-				Otros: 0,
+				Otros: 0
 			};
 
 			if (listadoTickets instanceof Array) {
+				var clear = true;
 				listadoTickets.forEach(jQuery.proxy(function (element) {
 					var oTicket = oModel.oData[element];
-					this.contarPorEstado(oTicket, oModelCount);
+					this.contarPorEstado(oTicket, oModelCount, clear);
 					this.contarPorLado(oTicket, oModelLados);
+					 clear = false;
 				}), this);
 			}
 
@@ -156,9 +166,9 @@ sap.ui.define([
 			}
 			return oModelLado;
 		},
-		contarPorEstado: function (oTicket, oModelCount) {
+		contarPorEstado: function (oTicket, oModelCount, vClear) {
 
-			if (!oModelCount.Total) {
+			if (vClear) {
 				oModelCount.Total = 0;
 				oModelCount.tsa = 0;
 				oModelCount.tep = 0;
@@ -167,6 +177,7 @@ sap.ui.define([
 			}
 
 			oModelCount.Total = oModelCount.Total + 1;
+			
 			switch (oTicket.Estado) {
 
 			case "Pendiente":
@@ -267,6 +278,8 @@ sap.ui.define([
 		},
 
 		filtrar: function () {
+			
+			this._oViewSettingsDialog.open();
 
 			/*var oModel = this.getView().getModel();*/
 
@@ -408,6 +421,25 @@ sap.ui.define([
 			oFrame.addFeed(feedValueAxis);
 			oFrame.addFeed(feedCategoryAxis);
 
+		},
+		onConfirm: function( ){
+			this._oViewSettingsDialog.close( );
+			
+		},
+		
+		onClose: function( ){
+			this._oViewSettingsDialog.close( );
+		},
+		
+		_initFilterView: function ( ) {
+			if (!this._oViewSettingsDialog) {
+				this._oViewSettingsDialog = sap.ui.xmlfragment("FilterDialogFragment", "com.softtek.Chart.view.filtros",
+					this);
+				//this._oViewSettingsDialog.setModel(this._oItems, "Filter");
+				this.getView().addDependent(this._oViewSettingsDialog);
+				// forward compact/cozy style into Dialog
+				//this._oViewSettingsDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
+			}
 		},
 
 		mensaje: function () {

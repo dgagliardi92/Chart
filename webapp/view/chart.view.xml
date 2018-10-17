@@ -6,7 +6,7 @@
 	<App>
 		<pages>
 			<Page title="{i18n>title}">
-				<layout:Grid defaultSpan="XL4 L4 M4 S12">
+				<layout:Grid defaultSpan="XL4 L4 M4 S12" hSpacing="0" vSpacing="0">
 					<layout:Splitter height="15rem" width="100%">
 						<layout:contentAreas>
 							<commons:ChartContainer id="chartContain23" showZoom="false" showFullScreen="true" showPersonalization="false" autoAdjustHeight="false">
@@ -61,11 +61,8 @@
 						</layout:contentAreas>
 					</layout:Splitter>
 				</layout:Grid>
-				<!--</FlexBox>-->
-				<Panel height="22rem">
-					<!--<FlexBox >
-			<items>-->
-					<IconTabBar id="iconTabBar" tabDensityMode="Compact" stretchContentHeight="true" select="handleIconTabBarSelect">
+				<Panel height="20rem">
+					<IconTabBar id="iconTabBar" expandable="true" tabDensityMode="Compact" stretchContentHeight="true" select="handleIconTabBarSelect">
 						<items>
 							<IconTabFilter showAll="true" count="{Totales>/Total}" text="Todo" key="All"/>
 							<IconTabSeparator/>
@@ -118,15 +115,12 @@
 						</content>
 					</IconTabBar>
 				</Panel>
-				<!--</items>
-		</FlexBox>-->
-				<!--</content>-->
-				<!--<footer>
+				<footer>
 					<OverflowToolbar id="otbFooter">
 						<ToolbarSpacer/>
 						<OverflowToolbarButton text="Filtros" press="filtrar" icon="sap-icon://filter"/>
 					</OverflowToolbar>
-				</footer>-->
+				</footer>
 			</Page>
 		</pages>
 	</App>
