@@ -1,4 +1,4 @@
-<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
+<core:FragmentDefinition xmlns="sap.m" List="sap.ui.core.ListItem" xmlns:core="sap.ui.core" xmlns:f="sap.ui.layout.form">
 	<Dialog title="Filtros" id="viewSettingsDialog" contentWidth="44%">
 		<content>
 			<f:Form id="filterFecha" editable="true">
@@ -11,8 +11,8 @@
 						<f:formElements>
 							<f:FormElement label="Mes">
 								<f:fields>
-									<Select id="mes" items="{Filter>/itemsMeses}" forceSelection="false" class="sapUiMediumMarginEnd">
-										<core:Item key="{Filter>key}" text="{Filter>value}"/>
+									<Select id="mes" items="{Filtros>/itemsMeses}" forceSelection="false" class="sapUiMediumMarginEnd">
+										<core:Item key="{Filtros>key}" text="{Filtros>value}"/>
 									</Select>
 								</f:fields>
 							</f:FormElement>
@@ -20,8 +20,8 @@
 						<f:formElements>
 							<f:FormElement label="Año">
 								<f:fields>
-									<Select id="anio" items="{Filter>/itemsAnios}" forceSelection="false">
-										<core:Item key="{Filter>key}" text="{Filter>value}"/>
+									<Select id="anio" items="{Filtros>/itemsAnios}" forceSelection="false" class="sapUiMediumMarginEnd">
+										<core:Item key="{Filtros>key}" text="{Filtros>value}"/>
 									</Select>
 								</f:fields>
 							</f:FormElement>
@@ -29,10 +29,21 @@
 					</f:FormContainer>
 					<f:FormContainer>
 						<f:formElements>
-							<f:FormElement visible="{comboCuentasVisible>/visible}" label="Socios">
+							<f:FormElement label="Lados">
 								<f:fields>
-									<Select id="matchCodeCuentasId" items="{/CuentasSecundariasDropListSet}" selectedKey="{socioModel>/socio}" forceSelection="false">
-										<core:Item key="{Kunnr}" text="{Nombre}"/>
+									<Select id="LadoId" items="{Filtros>/Lados}" forceSelection="false" class="sapUiMediumMarginEnd">
+										<core:Item key="{Filtros>index}" text="{Filtros>nombre}"/>
+									</Select>
+								</f:fields>
+							</f:FormElement>
+						</f:formElements>
+					</f:FormContainer>
+					<f:FormContainer>
+						<f:formElements>
+							<f:FormElement label="Prioridad">
+								<f:fields>
+									<Select id="PrioridadId" items="{Filtros>/Prioridades}" forceSelection="false">
+										<core:Item key="{Filtros>index}" text="{Filtros>nombre}"/>
 									</Select>
 								</f:fields>
 							</f:FormElement>
