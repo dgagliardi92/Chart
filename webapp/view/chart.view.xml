@@ -2,165 +2,179 @@
 	xmlns:commons="sap.suite.ui.commons" xmlns:viz.data="sap.viz.ui5.data" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
 	xmlns:html="http://www.w3.org/1999/xhtml" xmlns:semantic="sap.f.semantic" xmlns:mvc="sap.ui.core.mvc" xmlns:micro="sap.suite.ui.microchart"
 	xmlns:layout="sap.ui.layout" xmlns:f="sap.ui.layout.form" xmlns="sap.m" controllerName="com.softtek.Chart.controller.chart"
-	displayBlock="true">
-	<App>
-		<pages>
-			<Page title="{i18n>title}">
-				<!--<layout:Grid defaultSpan="XL4 L4 M4 S12" hSpacing="0" vSpacing="0">-->
-				<layout:Grid defaultSpan="XL3 L3 M3 S12" hSpacing="0" vSpacing="0">
-					<!--<layout:Splitter height="15rem" width="100%">
-						<layout:contentAreas>
-							<commons:ChartContainer id="chartContain23" showZoom="false" showFullScreen="true" showPersonalization="false" autoAdjustHeight="false">
-								<commons:ChartContainerContent icon="sap-icon://line-chart">
-									<commons:content>
-										<viz:VizFrame id="idcolumn" height="14rem" width="100%"/>
-									</commons:content>
-								</commons:ChartContainerContent>
-							</commons:ChartContainer>
-						</layout:contentAreas>
-					</layout:Splitter>-->
-					<layout:Splitter height="15rem" width="100%">
-						<layout:contentAreas>
-							<commons:ChartContainer id="chartContain55" showZoom="false" showFullScreen="true" showPersonalization="false" autoAdjustHeight="false">
-								<commons:ChartContainerContent icon="sap-icon://line-chart">
-									<commons:content>
-										<viz:VizFrame id="barTickets" height="14rem" width="100%" uiConfig="{applicationSet:'fiori'}"/>
-									</commons:content>
-								</commons:ChartContainerContent>
-							</commons:ChartContainer>
-						</layout:contentAreas>
-					</layout:Splitter>
-					<layout:Splitter height="15rem">
-						<layout:contentAreas>
-							<commons:ChartContainer id="chartContainer" showZoom="false" showPersonalization="false" showFullScreen="true" autoAdjustHeight="true">
-								<commons:ChartContainerContent >
-									<commons:content>
-										<viz:VizFrame xmlns="sap.viz" id="idDonutChart" vizType="donut" width="25%" height="25%"
-											vizProperties="{ plotArea: { dataLabel : { visible: true }, drawingEffect: 'glossy' }, title:{ text:'Estado de los Tickets'} }">
-											<viz:dataset>
-												<viz.data:FlattenedDataset data="{/Data}">
-													<viz.data:dimensions>
-														<viz.data:DimensionDefinition name="Nombre" value="{nombre}"/>
-													</viz.data:dimensions>
-													<viz.data:measures>
-														<viz.data:MeasureDefinition name="Valor" value="{valor}"/>
-													</viz.data:measures>
-												</viz.data:FlattenedDataset>
-											</viz:dataset>
-											<viz:feeds>
-												<viz.feeds:FeedItem uid="size" type="Measure" values="Valor"/>
-												<viz.feeds:FeedItem uid="color" type="Dimension" values="Nombre"/>
-											</viz:feeds>
-										</viz:VizFrame>
-									</commons:content>
-								</commons:ChartContainerContent>
-							</commons:ChartContainer>
-						</layout:contentAreas>
-					</layout:Splitter>
-					<layout:Splitter height="15rem">
-						<layout:contentAreas>
-							<commons:ChartContainer id="cont3" showFullScreen="true" showZoom="false" showPersonalization="false" autoAdjustHeight="true">
-								<commons:ChartContainerContent>
-									<commons:content>
-										<Panel id="panel2" headerText="{/Titulo}">
-											<micro:RadialMicroChart id="radial" size="Auto"/>
-											<Text id="textcont" renderWhitespace="true"/>
-											<Text id="textcons"/>
-										</Panel>
-									</commons:content>
-								</commons:ChartContainerContent>
-							</commons:ChartContainer>
-						</layout:contentAreas>
-					</layout:Splitter>
-					<layout:Splitter height="15rem" width="100%">
-						<layout:contentAreas>
-							<commons:ChartContainer showZoom="false" showFullScreen="true" showPersonalization="false" autoAdjustHeight="false">
-								<commons:ChartContainerContent icon="sap-icon://line-chart">
-									<commons:content>
-										<viz:Popover id="idPopOver"></viz:Popover>
-										<viz:VizFrame id="pie" uiConfig="{applicationSet:'fiori'}" height="14rem" width="100%">
-											<viz:dataset>
-												<viz.data:FlattenedDataset data="{/Consumo}">
-													<viz.data:dimensions>
-														<viz.data:DimensionDefinition name="nombre" value="{nombre}"/>
-													</viz.data:dimensions>
-													<viz.data:measures>
-														<viz.data:MeasureDefinition name="consumido" value="{consumido}"/>
-													</viz.data:measures>
-												</viz.data:FlattenedDataset>
-											</viz:dataset>
-											<viz:feeds>
-												<viz.feeds:FeedItem uid="size" type="Measure" values="consumido"/>
-												<viz.feeds:FeedItem uid="color" type="Dimension" values="nombre"/>
-											</viz:feeds>
-										</viz:VizFrame>
-									</commons:content>
-								</commons:ChartContainerContent>
-							</commons:ChartContainer>
-						</layout:contentAreas>
-					</layout:Splitter>
-				</layout:Grid>
-				<Panel height="20rem">
-					<IconTabBar id="iconTabBar" expandable="true" tabDensityMode="Compact" stretchContentHeight="true" select="handleIconTabBarSelect">
-						<items>
-							<IconTabFilter showAll="true" count="{Totales>/Total}" text="Todo" key="All"/>
-							<IconTabSeparator/>
-							<IconTabFilter icon="sap-icon://time-entry-request" iconColor="Negative" count="{Totales>/tsa}" text="Sin Asignar" key="tsa"/>
-							<IconTabFilter icon="sap-icon://technical-object" iconColor="Critical" count="{Totales>/tep}" text="En Proceso" key="tep"/>
-							<IconTabFilter icon="sap-icon://away" iconColor="Positive" count="{Totales>/teer}" text="En Espera Resp." key="teer"/>
-							<IconTabFilter icon="sap-icon://detail-view" iconColor="Neutral" count="{Totales>/tpr}" text="En Pruebas" key="tpr"/>
-						</items>
-						<content>
-							<ScrollContainer height="100%" width="100%" horizontal="false" vertical="true">
-								<!--<List items="{ path: '/TicketsAbiertosSet' }">
-										<StandardListItem title="{Ticket} - {Descripcion} - {Estado}"/>
-									</List>-->
-								<Table id="Table" growing="true" growingThreshold="100" growingScrollToLoad="true" updateFinished="cargartotales"
-									items="{ path: 'Tickets>/TicketsAbiertosSet' }">
-									<!--<Table id="Table" growing="true" growingThreshold="100" growingScrollToLoad="true" updateFinished="cargartotales"
-										items="{ path: 'Tickets/' }">-->
-									<columns>
-										<Column id="col_ticket">
-											<Text text="{i18n>ticket}" id="text_ticket"/>
-										</Column>
-										<Column id="col_descr">
-											<Text text="{i18n>descripcion}" id="text_descr"/>
-										</Column>
-										<Column id="col_estado">
-											<Text text="{i18n>estado}" id="text_estado"/>
-										</Column>
-										<Column id="col_lado">
-											<Text text="{i18n>lado}" id="text_lado"/>
-										</Column>
-									</columns>
-									<items>
-										<ColumnListItem type="Navigation" press="onPress">
-											<cells>
-												<ObjectIdentifier title="{Tickets>Ticket}"/>
-											</cells>
-											<cells>
-												<ObjectIdentifier title="{Tickets>Descripcion}"/>
-											</cells>
-											<cells>
-												<ObjectIdentifier title="{Tickets>Estado}"/>
-											</cells>
-											<cells>
-												<ObjectIdentifier title="{Tickets>Lado}"/>
-											</cells>
-										</ColumnListItem>
-									</items>
-								</Table>
-							</ScrollContainer>
-						</content>
-					</IconTabBar>
-				</Panel>
-				<footer>
-					<OverflowToolbar id="otbFooter">
-						<ToolbarSpacer/>
-						<OverflowToolbarButton text="Filtros" press="filtrar" icon="sap-icon://filter"/>
-					</OverflowToolbar>
-				</footer>
-			</Page>
+	displayBlock="true" height="100%">
+	
+	<semantic:SemanticPage id="mySemanticPage" headerPinnable="false" toggleHeaderOnTitleClick="true" preserveHeaderStateOnScroll="false"
+		showFooter="true">
+		
+		<semantic:titleHeading>
+			<Title text="{i18n>title}" titleStyle="H1"/>	
+		</semantic:titleHeading>
+		
+		<semantic:headerContent>
+			<layout:Grid defaultSpan="XL4 L4 M4 S12" hSpacing="0.5" vSpacing="0">
+				<layout:Splitter width="100%" height="12rem">
+					<layout:contentAreas>
+						<commons:ChartContainer id="Cont1" title="Abono" showZoom="false" showFullScreen="true"
+							showPersonalization="false" autoAdjustHeight="true">
+							<!--showLegendButton="false" showLegend="true"-->
+							<commons:ChartContainerContent icon="sap-icon://line-chart">
+								<commons:content>
+									<!--<viz:VizFrame id="barTickets" height="14rem" width="100%" uiConfig="{applicationSet:'fiori'}"/>-->
+									<viz:VizFrame id="barTickets" vizType="donut" height='100%' width="100%"
+										vizProperties="{ plotArea: { dataLabel : { visible: true, height: '40%' }, drawingEffect: 'glossy' }, title: { visible : false }, legendGroup:{ layout: { alignment: 'center', position: 'bottom' } } }">
+										<viz:dataset>
+											<viz.data:FlattenedDataset data="{/Consumo}">
+												<viz.data:dimensions>
+													<viz.data:DimensionDefinition name="nombre" value="{nombre}"/>
+												</viz.data:dimensions>
+												<viz.data:measures>
+													<viz.data:MeasureDefinition name="Valor" value="{valor}"/>
+												</viz.data:measures>
+											</viz.data:FlattenedDataset>
+										</viz:dataset>
+										<viz:feeds>
+											<viz.feeds:FeedItem uid="size" type="Measure" values="Valor"/>
+											<viz.feeds:FeedItem uid="color" type="Dimension" values="nombre"/>
+										</viz:feeds>
+									</viz:VizFrame>
+								</commons:content>
+							</commons:ChartContainerContent>
+						</commons:ChartContainer>
+					</layout:contentAreas>
+				</layout:Splitter>
+				<layout:Splitter height="12rem">
+					<layout:contentAreas>
+						<commons:ChartContainer id="chartContainer" showZoom="false" title='Lados de los Tickets'
+							showPersonalization="false" showFullScreen="true" autoAdjustHeight="true">
+							<!--showLegendButton="false" showLegend="true"-->
+							<commons:ChartContainerContent >
+								<commons:content>
+									<viz:VizFrame xmlns="sap.viz" id="idDonutChart" vizType="donut" width="25%" height="25%" legendVisible="false"
+										vizProperties="{ plotArea: { dataLabel : { visible: true }, drawingEffect: 'glossy' }, title: { visible : false} }">
+										<viz:dataset>
+											<viz.data:FlattenedDataset data="{/Data}">
+												<viz.data:dimensions>
+													<viz.data:DimensionDefinition name="Nombre" value="{nombre}"/>
+												</viz.data:dimensions>
+												<viz.data:measures>
+													<viz.data:MeasureDefinition name="Valor" value="{valor}"/>
+												</viz.data:measures>
+											</viz.data:FlattenedDataset>
+										</viz:dataset>
+										<viz:feeds>
+											<viz.feeds:FeedItem uid="size" type="Measure" values="Valor"/>
+											<viz.feeds:FeedItem uid="color" type="Dimension" values="Nombre"/>
+										</viz:feeds>
+									</viz:VizFrame>
+								</commons:content>
+							</commons:ChartContainerContent>
+						</commons:ChartContainer>
+					</layout:contentAreas>
+				</layout:Splitter>
+				<layout:Splitter height="12rem">
+					<layout:contentAreas>
+						<commons:ChartContainer showZoom="false" showFullScreen="true" showPersonalization="false"
+							autoAdjustHeight="true" title='Prioridades de los tickets'>
+							<!--showLegendButton="false" showLegend="true"-->
+							<commons:ChartContainerContent icon="sap-icon://line-chart">
+								<commons:content>
+									<viz:VizFrame id="pie" height="14rem" vizType="donut"
+										vizProperties="{ plotArea: { dataLabel : { visible: true }, drawingEffect: 'glossy' }, title: { visible : false}, position: 'right' }">
+										<viz:dataset>
+											<viz.data:FlattenedDataset data="{/Prioridades}">
+												<viz.data:dimensions>
+													<viz.data:DimensionDefinition name="nombre" value="{nombre}"/>
+												</viz.data:dimensions>
+												<viz.data:measures>
+													<viz.data:MeasureDefinition name="cont" value="{cont}"/>
+												</viz.data:measures>
+											</viz.data:FlattenedDataset>
+										</viz:dataset>
+										<viz:feeds>
+											<viz.feeds:FeedItem uid="size" type="Measure" values="cont"/>
+											<viz.feeds:FeedItem uid="color" type="Dimension" values="nombre"/>
+										</viz:feeds>
+									</viz:VizFrame>
+								</commons:content>
+							</commons:ChartContainerContent>
+						</commons:ChartContainer>
+					</layout:contentAreas>
+				</layout:Splitter>
+			</layout:Grid>
+			<!--</Panel>-->
+			<!--<ObjectStatus text="In Stock" state="{/objectDescription/status}"/>-->
+		</semantic:headerContent>
+		<semantic:content>
+			<!--<Panel height="20rem">-->
+			<IconTabBar id="iconTabBar" expandable="false" stretchContentHeight="true" select="handleIconTabBarSelect"
+			class="sapUiNoContentPadding" >
+				<!--tabDensityMode="Compact"-->
+				<items>
+					<IconTabFilter icon="sap-icon://activities" count="{Totales>/Total}" text="Tickets" iconColor="Neutral" key="All"/>
+					<IconTabSeparator/>
+					<IconTabFilter icon="sap-icon://time-entry-request" iconColor="Neutral" count="{Totales>/tsa}" text="Sin Asignar" key="tsa"/>
+					<IconTabFilter icon="sap-icon://technical-object" iconColor="Neutral" count="{Totales>/tep}" text="En Proceso" key="tep"/>
+					<IconTabFilter icon="sap-icon://away" iconColor="Neutral" count="{Totales>/teer}" text="Espera Resp." key="teer"/>
+					<IconTabFilter icon="sap-icon://detail-view" iconColor="Neutral" count="{Totales>/tpr}" text="En Pruebas" key="tpr"/>
+				</items>
+				<content>
+					<ScrollContainer height="100%" width="100%" horizontal="false" vertical="true">
+						<Table id="Table" growing="true" growingThreshold="100" growingScrollToLoad="true" updateFinished="cargartotales"
+							items="{ path: 'Tickets>/TicketsAbiertosSet' }">
+							<columns>
+								<Column id="col_ticket" minScreenWidth="Small" demandPopin="true" width="7rem">
+									<Text text="{i18n>ticket}" id="text_ticket"/>
+								</Column>
+								<Column id="col_descr">
+									<Text text="{i18n>descripcion}" id="text_descr"/>
+								</Column>
+								<Column id="col_estado" minScreenWidth="Small" demandPopin="false">
+									<Text text="{i18n>estado}" id="text_estado"/>
+								</Column>
+								<!--<Column id="col_lado">
+									<Text text="{i18n>lado}" id="text_lado"/>
+								</Column>-->
+								<Column id="col_agingEstado" minScreenWidth="Tablet" demandPopin="false" width="10rem">
+									<Text text="{i18n>agingEstado}" id="text_agingEstado"/>
+								</Column>
+								<Column id="col_AgingCreacionDias" minScreenWidth="Tablet" demandPopin="false" width="10rem">
+									<Text text="{i18n>agingCreacionDias}" id="text_AgingCreacionDias"/>
+								</Column>
+							</columns>
+							<items>
+								<ColumnListItem>
+									<!--type="Navigation" press="onPress"-->
+									<cells>
+										<Link text="{Tickets>Ticket}" href="{Tickets>URL}" target="_blank" emphasized="false"/>
+										<ObjectIdentifier title="{Tickets>Descripcion}"/>
+										<ObjectIdentifier title="{Tickets>Estado}"/>
+										<!--<ObjectIdentifier title="{Tickets>Lado}"/> -->
+										<ObjectIdentifier title="{Tickets>AgingUltEstadoDias}"/>
+										<ObjectIdentifier title="{Tickets>AgingCreacionDias}"/>
+									</cells>
+								</ColumnListItem>
+							</items>
+						</Table>
+					</ScrollContainer>
+				</content>
+			</IconTabBar>
+			<!--</Panel>-->
+			<!--<footer>
+			<OverflowToolbar id="otbFooter">
+				<ToolbarSpacer/>
+				<OverflowToolbarButton text="Filtros" press="clearFilter" icon="sap-icon://clear-filter"/>
+				<OverflowToolbarButton text="Filtros" press="filtrar" icon="sap-icon://filter"/>
+			</OverflowToolbar>
+		</footer>-->
+		</semantic:content>
+		<semantic:footerCustomActions>
+			<!--<OverflowToolbarButton text="Filtros" press="clearFilter" icon="sap-icon://clear-filter"/>-->
+			<OverflowToolbarButton text="Descargar" press="download" icon="sap-icon://excel-attachment"/>
+			<OverflowToolbarButton text="Filtros" press="filtrar" icon="sap-icon://filter"/>
+		</semantic:footerCustomActions>
+	</semantic:SemanticPage>
+	<!--	</Page>
 		</pages>
-	</App>
+	</App>-->
 </mvc:View>

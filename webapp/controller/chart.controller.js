@@ -4,11 +4,11 @@ sap.ui.define([
 	'sap/ui/model/Filter',
 	'sap/ui/model/FilterOperator',
 	'sap/viz/ui5/format/ChartFormatter',
-
-], function (Controller, JSONModel, Filter, FilterOperator, ChartFormatter) {
+	'sap/ui/core/util/Export',
+	'sap/ui/core/util/ExportTypeCSV',
+	'sap/m/MessageBox'
+], function (Controller, JSONModel, Filter, FilterOperator, ChartFormatter, Export, ExportTypeCSV, MessageBox) {
 	"use strict";
-
-	var ticketGlobal = [];
 
 	return Controller.extend("com.softtek.Chart.controller.chart", {
 
@@ -23,17 +23,6 @@ sap.ui.define([
 
 			this.byId("iconTabBar").setModel(this.getOwnerComponent().getModel("Totales"));
 
-			this.dibujargrafico(0, 0, "");
-			//this.mapingOData(1, 0, this.getView().byId("idcolumn"), "bullet");
-			
-			var oPopOver = this.getView().byId("idPopOver");
-            oPopOver.connect(this.getView().byId("pie").getVizUid());
-            oPopOver.setFormatString(ChartFormatter.DefaultPattern.STANDARDFLOAT);
-			this.mapingOData(1, 0, this.getView().byId("pie"), "pie");
-			
-			
-			this.dibujarBar(1, 0);
-
 		},
 
 		onBeforeRendering: function (oEvent) {
@@ -42,33 +31,51 @@ sap.ui.define([
 
 		},
 
-		OKAbonoSet: function (oData) {
-
+		OKAbonoSet: function (oData, oPeriodo) {
+			
 			var Tickets = new sap.ui.model.json.JSONModel(oData.results);
 			var oticket = Tickets.getProperty("/0/");
 
-			this.dibujargrafico(oticket.Abono, oticket.Consumido, oticket.Periodo);
+			if (oticket === undefined) {
+				oticket = {
+					Consumido: 0,
+					AbonoReal: 0
+				};
+			}
 
-			var oModelConsumo = new JSONModel({
-				'Consumo': [{
-					nombre: "",
-					consumido: oticket.Consumido,
-					restante: oticket.Abono - oticket.Consumido
-				}]
-			});
+			var oTitle = "Abono : " + oticket.AbonoReal + " hs. - " + String(oPeriodo).substring(0, 2) + "." + String(oPeriodo).substring(2);
+			this.getView().byId("Cont1").setTitle(oTitle);
 
-			//this.getView().byId("idcolumn").setModel(oModelConsumo);
+			var Restante = oticket.AbonoReal - oticket.Consumido;
+			var tRestante = parseFloat(Restante).toFixed(2);
+
+			//var Consumido = Math.fround(oticket.Consumido).toFixed(2);
+			//var Consumido = oticket.Consumido.toFixed(2);
+			var Consumido = parseFloat(oticket.Consumido).toFixed(2);
+
+			var tConsumido = String(Consumido);
 
 			var oModel = new JSONModel({
 				'Consumo': [{
-					nombre: "",
-					min: oticket.Consumido,
-					max: oticket.Abono
+					nombre: "Consumido: " + tConsumido + " hs",
+					valor: Consumido
+				}, {
+					nombre: "Restante: " + tRestante + " hs",
+					valor: Restante.toFixed(2)
 				}]
 			});
 			this.getView().byId("barTickets").setModel(oModel);
-			this.setReferenceLine(this.getView().byId("barTickets"), oticket.Consumido, oticket.Consumido + "hs", oticket.Abono, oticket.Abono +
-				"hs");
+
+			//var oPorc = oticket.Consumido * 100 / oticket.AbonoReal;
+			//var tPorcentaje = Math.floor(oPorc.toFixed(2));
+			//var oTextoRef = oticket.Consumido + " hs " + " - " + tPorcentaje + "%";
+
+			//this.getView().byId("barTickets").setTitle("Abono real: " + oticket.AbonoReal + "hs. - Consumido: " + oticket.AbonoReal + "hs");
+
+			//this.setReferenceLine(this.getView().byId("barTickets"),
+			//	oticket.Consumido, oTextoRef, oticket.AbonoReal, oticket.AbonoReal +
+			//	"hs");
+
 		},
 
 		onAfterRendering: function () {},
@@ -76,10 +83,24 @@ sap.ui.define([
 		cargartotales: function (oEvent) {
 
 			var oModel = this.getOwnerComponent().getModel("Tickets");
-			ticketGlobal = this.getOwnerComponent().getModel("Tickets").getData("/");
 
 			var listadoTickets = Object.getOwnPropertyNames(oModel.getProperty("/"));
 			var oModelCount = this.byId("iconTabBar").getModel();
+			
+			
+			var oPeriodo = sap.ui.core.Fragment.byId("FilterDialogFragment", "Periodo").getSelectedKey();
+
+			var aFilters = [];
+			this.cargarFiltro(aFilters, "Periodo");
+
+			//Busco el abono del cliente
+			oModel.read("/AbonoSet", {
+				filters: aFilters,
+				success: jQuery.proxy(function (oData, Response) {
+					this.OKAbonoSet(oData, oPeriodo);
+				}, this),
+				error: function (oEventError) {}
+			});
 
 			var oModelLados = {
 				Cliente: 0,
@@ -87,14 +108,19 @@ sap.ui.define([
 				Otros: 0
 			};
 
+		
+
 			if (listadoTickets instanceof Array) {
 				var clear = true;
 				listadoTickets.forEach(jQuery.proxy(function (element) {
+
 					var oTicket = oModel.getProperty("/".concat([element], "/"));
-					this.contarPorEstado(oTicket, oModelCount, clear);
-					this.contarPorLado(oTicket, oModelLados);
-					this.acumularFiltros(oTicket, this._oFiltros);
-					clear = false;
+					if (oTicket.Estado !== undefined) {
+						this.contarPorEstado(oTicket, oModelCount, clear);
+						this.contarPorLado(oTicket, oModelLados);
+						this.acumularFiltros(oTicket, this._oFiltros, clear);
+						clear = false;
+					}
 				}), this);
 			}
 
@@ -108,13 +134,8 @@ sap.ui.define([
 				tpr: oModelCount.tpr
 			});
 
-			//Busco el abono del cliente
-			oModel.read("/AbonoSet", {
-				success: jQuery.proxy(function (oData, Response) {
-					this.OKAbonoSet(oData);
-				}, this),
-				error: function (oEventError) {}
-			});
+			this.getView().byId("pie").setModel(new sap.ui.model.json.JSONModel(this._oFiltros));
+
 
 			//Cargo el modelo Totales
 			this.getView().byId("iconTabBar").setModel(oModelCount2, "Totales");
@@ -124,7 +145,12 @@ sap.ui.define([
 			this.dialog.close();
 		},
 
-		acumularFiltros: function (oTicket, oFiltros) {
+		acumularFiltros: function (oTicket, oFiltros, vClear) {
+
+			if (vClear) {
+				oFiltros.Prioridades = [];
+				oFiltros.iPrioridades = [];
+			}
 
 			if (oTicket.Lado === "")
 				oTicket.Lado = "Vacio";
@@ -138,21 +164,91 @@ sap.ui.define([
 					nombre: oTicket.Lado,
 					index: vindex
 				});
-
 			}
 
-			if (oFiltros.iPrioridades.indexOf(oTicket.Prioridad) < 0) {
+			var index = oFiltros.iPrioridades.indexOf(oTicket.Prioridad);
 
-				vindex = oFiltros.iPrioridades.lenght + 1;
+			if (index < 0) {
+				if (oFiltros.iPrioridades.lenght === undefined)
+					vindex = 1;
+				else
+					vindex = oFiltros.iPrioridades.lenght + 1;
 
 				oFiltros.iPrioridades.push(oTicket.Prioridad);
 				oFiltros.Prioridades.push({
 					nombre: oTicket.Prioridad,
-					index: vindex
+					index: vindex,
+					cont: 1
 				});
-
+			} else {
+				oFiltros.Prioridades[index].cont = Number(oFiltros.Prioridades[index].cont) + 1;
 			}
 
+		},
+
+		download: sap.m.Table.prototype.exportData || function () {
+
+			var oModel = this.getOwnerComponent().getModel("Tickets");
+			var listadoTickets = Object.getOwnPropertyNames(oModel.getProperty("/"));
+
+			if (listadoTickets instanceof Array) {
+				var oDatos = {
+					Tickets: []
+				};
+
+				listadoTickets.forEach(jQuery.proxy(function (element) {
+					var oTicket = oModel.getProperty("/".concat([element], "/"));
+					oDatos.Tickets.push({
+						Ticket: oTicket.Ticket,
+						Descripcion: oTicket.Descripcion,
+						Estado: oTicket.Estado,
+						AgingUltEstadoDias: oTicket.AgingUltEstadoDias,
+						AgingCreacionDias: oTicket.AgingCreacionDias
+					});
+				}));
+				var datos = new JSONModel(oDatos);
+			}
+
+			var oExport = new Export({
+				exportType: new ExportTypeCSV({
+					fileExtension: "csv",
+					separatorChar: ";"
+				}),
+
+				models: datos,
+
+				rows: {
+					path: "/Tickets"
+				},
+
+				columns: [{
+					name: "Ticket",
+					template: {
+						content: "{Ticket}"
+					}
+				}, {
+					name: "Descripcion",
+					template: {
+						content: "{Descripcion}"
+					}
+				}, {
+					name: "Estado",
+					template: {
+						content: "{Estado}"
+					}
+				}, {
+					name: "Aging Estado",
+					template: {
+						content: "{AgingUltEstadoDias}"
+					}
+				}, {
+					name: "Aging Creacion Dias",
+					template: {
+						content: "{AgingCreacionDias}"
+					}
+				}]
+			});
+			oExport.saveFile("Tickets").catch(function (oError) {}).then(function () {});
 		},
 
 		contarPorLado: function (oTicket, oModelLado) {
@@ -194,18 +290,20 @@ sap.ui.define([
 				oModelCount.tsa = oModelCount.tsa + 1;
 				break;
 			case "Propuesta Enviada":
-				oModelCount.teer = oModelCount.teer + 1;
-				break;
 			case "Consulta Cliente":
+			case "Enviado a SAP/SPS":
+			case "Stand By":
 				oModelCount.teer = oModelCount.teer + 1;
 				break;
 			case "Prueba Cliente":
-				oModelCount.tpr = oModelCount.tpr + 1;
-				break;
 			case "Implementado":
+			case "Solución Brindada":
 				oModelCount.tpr = oModelCount.tpr + 1;
 				break;
-			default:
+			case "En Proceso":
+			case "En Análisis":
+			case "Propuesta Rechazada":
+			case "Propuesta Aprobada":
 				oModelCount.tep = oModelCount.tep + 1;
 				break;
 			}
@@ -234,32 +332,6 @@ sap.ui.define([
 
 		},
 
-		dibujargrafico: function (total, consumido, periodo) {
-
-			this.getView().byId("cont3").setTitle("Consumo Abono");
-
-			var oModel = new JSONModel({
-				"Titulo": "Periodo " + periodo
-			});
-
-			this.getView().byId("panel2").setModel(oModel);
-			var restante = total - consumido;
-
-			var vPorcentaje = 0.00;
-			if (consumido > 0) {
-				vPorcentaje = consumido * 100 / (total);
-			}
-			var tPorcentaje = Math.floor(vPorcentaje.toFixed(2));
-
-			this.getView().byId("textcont").setText("Horas Contratadas: " + consumido);
-			this.getView().byId("textcons").setText("Horas Consumidas: " + restante);
-
-			this.getView().byId("radial").setPercentage(tPorcentaje);
-			this.getView().byId("radial").setValueColor("Critical");
-			this.getView().byId("radial").setTooltip("");
-
-		},
-
 		handleIconTabBarSelect: function (oEvent) {
 
 			var oTable = this.getView().byId("Table");
@@ -273,19 +345,28 @@ sap.ui.define([
 				break;
 			case "tep":
 				aFilters.push(new Filter("Estado", FilterOperator.EQ, "En Proceso"));
-				aFilters.push(new Filter("Estado", FilterOperator.EQ, " "));
+				aFilters.push(new Filter("Estado", FilterOperator.EQ, "En Análisis"));
+				aFilters.push(new Filter("Estado", FilterOperator.EQ, "Propuesta Rechazada"));
+				aFilters.push(new Filter("Estado", FilterOperator.EQ, "Propuesta Aprobada"));
 				break;
 			case "teer":
 				aFilters.push(new Filter("Estado", FilterOperator.EQ, "Propuesta Enviada"));
 				aFilters.push(new Filter("Estado", FilterOperator.EQ, "Consulta Cliente"));
+				aFilters.push(new Filter("Estado", FilterOperator.EQ, "Enviado a SAP/SPS"));
+				aFilters.push(new Filter("Estado", FilterOperator.EQ, "Stand By"));
 				break;
 			case "tpr":
 				aFilters.push(new Filter("Estado", FilterOperator.EQ, "Prueba Cliente"));
+				aFilters.push(new Filter("Estado", FilterOperator.EQ, "Solución Brindada"));
 				aFilters.push(new Filter("Estado", FilterOperator.EQ, "Implementado"));
 				break;
 			}
 			var oBinding = oTable.getBinding("items");
 			oBinding.filter(aFilters);
+
+		},
+
+		clearFilter: function () {
 
 		},
 
@@ -296,107 +377,7 @@ sap.ui.define([
 		},
 
 		mapingOData: function (vAbono, vConsumido, oFrame, oType) {
-			//var vRestante = vAbono - vConsumido;
-
-			/*var oModelConsumo = new JSONModel({
-				"Consumo": [{
-					nombre: "",
-					consumido: vConsumido,
-					restante: vRestante
-				}]
-			});
-			*/
-			var oModelConsumo = new JSONModel({
-				"Consumo": [{
-					nombre: "pepe",
-					consumido: 300,
-					restante: 400
-				},{
-					nombre: "bla",
-					consumido: 100,
-					restante: 400
-				}
-				]
-			});
-
-			/*var oDataSet = new sap.viz.ui5.data.FlattenedDataset({
-				dimensions: [{
-					axis: 1,
-					name: "Tickets",
-					value: "{nombre}"
-				}],
-
-				measures: {
-					name: "Consumido",
-					value: '{consumido}'
-				}
-				/*, {
-					name: 'Restante',
-					value: '{restante}'
-				}
-				,
-				data: {
-					path: "/Consumo"
-				}
-
-			});*/
-
-			//oFrame.setDataset(oDataSet);
-			oFrame.setModel(oModelConsumo);
-
-			//oFrame.setVizType('stacked_bar');
-			//oFrame.setVizType('vertical_bullet');
-			//oFrame.setVizType('bullet');
 			oFrame.setVizType(oType);
-
-			/*oFrame.setVizProperties({
-				plotArea: {
-					dataLabel: {
-						visible: true,
-						formatString: ChartFormatter.DefaultPattern.SHORTFLOAT_MFD2
-					},
-					legend: {
-						visible: true
-					},
-					colorPalette: d3.scale.category20().range()
-				},
-				valueAxis: {
-					label: {
-						formatString: ChartFormatter.DefaultPattern.SHORTFLOAT
-					},
-					title: {
-						visible: false
-					}
-				},
-				gap: {
-					visible: true,
-					type: "positive",
-					positiveColor: 'sapUiChartPaletteSemanticGood'
-				},
-				title: {
-					visible: "false",
-					text: "Tickets"
-
-				}
-			});*/
-
-			/*var feedValueAxis = new sap.viz.ui5.controls.common.feeds.FeedItem({
-				'uid': "valueAxis",
-				'type': "Measure",
-				//'values': ["Consumido", "Restante"]
-				'values': ["Consumido"]
-					//'values': ["valor"]
-			});
-
-			var feedCategoryAxis = new sap.viz.ui5.controls.common.feeds.FeedItem({
-				'uid': "categoryAxis",
-				'type': "Dimension",
-				//'values': ["nombre","otro"]
-				'values': ["Tickets"]
-			});
-
-			oFrame.addFeed(feedValueAxis);
-			oFrame.addFeed(feedCategoryAxis);*/
 
 		},
 
@@ -404,8 +385,10 @@ sap.ui.define([
 
 			var oFrame = this.getView().byId("barTickets");
 
+			this.getView().byId("chartContainBarTicket").setTitle("Abono: ");
+
 			var oConsumidas = "Contratadas";
-			var oTicket = "Tickets";
+			var oTicket = " ";
 
 			var oModelConsumo = new JSONModel({
 				"Consumo": [{
@@ -417,17 +400,13 @@ sap.ui.define([
 
 			var oDataSet = new sap.viz.ui5.data.FlattenedDataset({
 				dimensions: [{
-					axis: 1,
 					name: oTicket,
 					value: "{nombre}"
 				}],
-				measures: [{
+				measures: {
 					name: oConsumidas,
 					value: '{max}'
-				}, {
-					name: 'min',
-					value: '{min}'
-				}],
+				},
 				data: {
 					path: "/Consumo"
 				}
@@ -435,7 +414,8 @@ sap.ui.define([
 
 			oFrame.setDataset(oDataSet);
 			oFrame.setModel(oModelConsumo);
-			oFrame.setVizType("bar");
+			//oFrame.setVizType("bar");
+			oFrame.setVizType("donut");
 
 			oFrame.setVizProperties({
 				plotArea: {
@@ -443,7 +423,7 @@ sap.ui.define([
 						visible: false
 					},
 					legend: {
-						visible: true
+						visible: false
 					},
 					colorPalette: d3.scale.category20().range()
 				},
@@ -457,7 +437,7 @@ sap.ui.define([
 					text: "Tickets"
 				}
 			});
-			
+
 			this.setReferenceLine(oFrame, Consumidas, Consumidas + "hs", Contratadas, Contratadas + "hs");
 
 			var feedValueAxis = new sap.viz.ui5.controls.common.feeds.FeedItem({
@@ -508,51 +488,6 @@ sap.ui.define([
 
 		},
 
-		maping: function (oFrame) {
-			var oDataSet = new sap.viz.ui5.data.FlattenedDataset({
-				dimensions: [{
-					name: 'Model',
-					value: "{Model>Brand}"
-				}],
-
-				measures: [{
-					name: 'Cars Bought',
-					value: "{Model>Value}"
-				}],
-				data: {
-					path: "Model>/Cars"
-				}
-			});
-			oFrame.setDataset(oDataSet);
-			oFrame.setVizType('bar');
-
-			oFrame.setVizProperties({
-				plotArea: {
-					colorPalette: d3.scale.category20().range()
-				},
-				title: {
-					visible: "true",
-					text: "TITULOSUPERCOOL"
-
-				}
-			});
-
-			var feedValueAxis = new sap.viz.ui5.controls.common.feeds.FeedItem({
-				'uid': "valueAxis",
-				'type': "Measure",
-				'values': ["Cars Bought"]
-			});
-
-			var feedCategoryAxis = new sap.viz.ui5.controls.common.feeds.FeedItem({
-				'uid': "categoryAxis",
-				'type': "Dimension",
-				'values': ["Model"]
-			});
-
-			oFrame.addFeed(feedValueAxis);
-			oFrame.addFeed(feedCategoryAxis);
-
-		},
 		onConfirm: function () {
 			this.applyFilters();
 			this._oViewSettingsDialog.close();
@@ -565,6 +500,25 @@ sap.ui.define([
 
 		applyFilters: function () {
 
+			var aFilters = [];
+			//this.cargarFiltro(aFilters,"Periodo");
+			this.cargarFiltro(aFilters, "Prioridad");
+			this.cargarFiltro(aFilters, "Lado");
+
+			var oTable = this.getView().byId("Table");
+			var oBinding = oTable.getBinding("items");
+			oBinding.filter(aFilters);
+
+		},
+		cargarFiltro: function (Filtros, Campo) {
+			var oValor = sap.ui.core.Fragment.byId("FilterDialogFragment", Campo).getSelectedKey();
+			if (oValor !== "")
+				Filtros.push(new Filter(Campo, FilterOperator.EQ, oValor));
+		},
+		clearFiltro: function (Filtros, Campo) {
+			var oValor = sap.ui.core.Fragment.byId("FilterDialogFragment", Campo).getSelectedKey();
+			if (oValor !== "")
+				Filtros.push(new Filter(Campo, FilterOperator.EQ, oValor));
 		},
 
 		_initFilterView: function () {
@@ -576,26 +530,48 @@ sap.ui.define([
 					Lados: [],
 					iPrioridades: [],
 					Prioridades: [],
+					Periodo: [],
 					itemsMeses: [],
 					itemsAnios: []
 				};
-				this.cargarMeses();
-				this.cargarAños();
+				this.cargarPeriodo();
 
 			}
 		},
-		cargarAños: function () {
+
+		cargarPeriodo: function () {
 			var añoAct = new Date().getFullYear();
-			var año = añoAct - 10;
+			var mesAct = new Date().getMonth() + 1;
+
 			var index = 0;
+			var oPeriodo;
+
 			do {
 				index = index + 1;
-				this._oFiltros.itemsAnios.push({
-					key: index,
-					value: añoAct
+				if (mesAct < 10)
+					var periodo = "0" + String(mesAct).concat(String(añoAct));
+				else
+					periodo = String(mesAct).concat(String(añoAct));
+
+				if (oPeriodo === undefined)
+					oPeriodo = periodo;
+
+				var tPeriodo = String(periodo).substring(0, 2) + "." + String(periodo).substring(2);
+
+				this._oFiltros.Periodo.push({
+					key: periodo,
+					value: tPeriodo
 				});
-				añoAct = añoAct - 1;
-			} while (año !== añoAct);
+
+				mesAct = mesAct - 1;
+				if (mesAct === 0) {
+					mesAct = 12;
+					añoAct = añoAct - 1;
+				}
+			} while (index !== 12);
+
+			sap.ui.core.Fragment.byId("FilterDialogFragment", "Periodo").setSelectedKey(oPeriodo);
+
 		},
 
 		cargarMeses: function () {

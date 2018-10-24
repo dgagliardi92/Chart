@@ -94,7 +94,7 @@
 				"settings": {
 					"defaultOperationMode": "Server",
 					"defaultBindingMode": "TwoWay",
-					"defaultCountMode": "Both"
+					"defaultCountMode": "None"
 				},
 				"dataSource": "ZSM_ANALYTICS_SRV",
 				"preload": true

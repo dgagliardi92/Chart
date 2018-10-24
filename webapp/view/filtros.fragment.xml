@@ -9,41 +9,32 @@
 				<f:formContainers>
 					<f:FormContainer>
 						<f:formElements>
-							<f:FormElement label="Mes">
+							<f:FormElement label="Periodo">
 								<f:fields>
-									<Select id="mes" items="{Filtros>/itemsMeses}" forceSelection="false" class="sapUiMediumMarginEnd">
-										<core:Item key="{Filtros>key}" text="{Filtros>value}"/>
-									</Select>
-								</f:fields>
-							</f:FormElement>
-						</f:formElements>
-						<f:formElements>
-							<f:FormElement label="Año">
-								<f:fields>
-									<Select id="anio" items="{Filtros>/itemsAnios}" forceSelection="false" class="sapUiMediumMarginEnd">
+									<Select id="Periodo" items="{Filtros>/Periodo}" forceSelection="true" class="sapUiMediumMarginEnd">
 										<core:Item key="{Filtros>key}" text="{Filtros>value}"/>
 									</Select>
 								</f:fields>
 							</f:FormElement>
 						</f:formElements>
 					</f:FormContainer>
-					<f:FormContainer>
+					<f:FormContainer visible="false">
 						<f:formElements>
 							<f:FormElement label="Lados">
 								<f:fields>
-									<Select id="LadoId" items="{Filtros>/Lados}" forceSelection="false" class="sapUiMediumMarginEnd">
-										<core:Item key="{Filtros>index}" text="{Filtros>nombre}"/>
+									<Select id="Lado" items="{Filtros>/Lados}" forceSelection="false" class="sapUiMediumMarginEnd">
+										<core:Item key="{Filtros>nombre}" text="{Filtros>nombre}"/>
 									</Select>
 								</f:fields>
 							</f:FormElement>
 						</f:formElements>
 					</f:FormContainer>
-					<f:FormContainer>
+					<f:FormContainer visible="false">
 						<f:formElements>
 							<f:FormElement label="Prioridad">
 								<f:fields>
-									<Select id="PrioridadId" items="{Filtros>/Prioridades}" forceSelection="false">
-										<core:Item key="{Filtros>index}" text="{Filtros>nombre}"/>
+									<Select id="Prioridad" items="{Filtros>/Prioridades}" forceSelection="false">
+										<core:Item key="{Filtros>nombre}" text="{Filtros>nombre}"/>
 									</Select>
 								</f:fields>
 							</f:FormElement>
