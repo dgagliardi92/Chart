@@ -3,8 +3,8 @@
 		<content>
 			<f:Form id="filterFecha" editable="true">
 				<f:layout>
-					<f:ResponsiveGridLayout labelSpanXL="3" labelSpanL="3" labelSpanM="3" labelSpanS="12" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="0"
-						emptySpanM="0" emptySpanS="0" columnsXL="2" columnsL="2" columnsM="2" singleContainerFullSize="false"/>
+					<f:ResponsiveGridLayout labelSpanXL="2" labelSpanL="2" labelSpanM="2" labelSpanS="2" adjustLabelSpan="false" emptySpanXL="0" emptySpanL="0"
+						emptySpanM="0" emptySpanS="0" columnsXL="1" columnsL="1" columnsM="1" singleContainerFullSize="false"/>
 				</f:layout>
 				<f:formContainers>
 					<f:FormContainer>
@@ -18,7 +18,7 @@
 							</f:FormElement>
 						</f:formElements>
 					</f:FormContainer>
-					<f:FormContainer visible="false">
+					<f:FormContainer visible="true">
 						<f:formElements>
 							<f:FormElement label="Lados">
 								<f:fields>
@@ -29,13 +29,27 @@
 							</f:FormElement>
 						</f:formElements>
 					</f:FormContainer>
-					<f:FormContainer visible="false">
+					<f:FormContainer visible="true">
 						<f:formElements>
 							<f:FormElement label="Prioridad">
 								<f:fields>
 									<Select id="Prioridad" items="{Filtros>/Prioridades}" forceSelection="false">
 										<core:Item key="{Filtros>nombre}" text="{Filtros>nombre}"/>
 									</Select>
+								</f:fields>
+							</f:FormElement>
+						</f:formElements>
+					</f:FormContainer>
+					<f:FormContainer visible="false">
+						<f:formElements>
+							<f:FormElement visible="true" label="Proyecto_lab">
+								<f:fields>
+									<SearchField id="proyecto" placeholder="Ingrese un proyecto ..." enableSuggestions="true" search="suggestionItemSelected" suggest="suggest"
+										suggestionItems="{path: 'matchcode>/matchcodeSet'}">
+										<suggestionItems>
+											<SuggestionItem key="{matchcode>codigo}" text="{matchcode>codigo} - {matchcode>descripcion}"/>
+										</suggestionItems>
+									</SearchField>
 								</f:fields>
 							</f:FormElement>
 						</f:formElements>

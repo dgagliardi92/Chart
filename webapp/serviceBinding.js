@@ -1,5 +1,5 @@
 function initModel() {
-	var sUrl = "/sap/opu/odata/sap/ZSM_ANALYTICS_SRV/";
-	var oModel = new sap.ui.model.odata.v2.ODataModel(sUrl, false);
+	var sUrl = "/sap/opu/odata/sap/ZMATCHCODE_SRV/";
+	var oModel = new sap.ui.model.odata.ODataModel(sUrl, true);
 	sap.ui.getCore().setModel(oModel);
 }

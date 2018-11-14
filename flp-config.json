@@ -1,0 +1,35 @@
+{
+    "application": {
+        "id": "",
+        "title": "com.softtek.Chart.Chart",
+        "description": "Chart",
+        "type": "SAP_UI5_Component",
+        "componentUrl": "/",
+        "appUrl": "#Chart-Display",
+        "navigationComponentName": "com.softtek.Chart",
+        "intentSemanticObject": "Chart",
+        "intentAction": "Display",
+        "html5ApplicationName": "chart",
+        "HCPParentApplicationName": ""
+    },
+    "assignment": {
+        "groups": [
+            "80fe10ae-e87c-457f-bc03-eb1e36f588fc"
+        ],
+        "contentPackages": [
+            "556ed4b3-7145-4520-9b26-d0acef384bbc"
+        ],
+        "categories": []
+    },
+    "tile": {
+        "type": "StaticTile",
+        "title": "Title",
+        "subtitle": "Subtitle",
+        "searchKeywords": "Title,Subtitle",
+        "displayIconUrl": "sap-icon://approvals",
+        "displayInfoText": "",
+        "size": "1x1",
+        "serviceURL": "",
+        "refreshInterval": ""
+    }
+}

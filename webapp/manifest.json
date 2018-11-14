@@ -23,11 +23,12 @@
 					"annotations": []
 				}
 			},
-			"": {
-				"uri": "",
-				"type": "ODataAnnotation",
+			"ZMATCHCODE_SRV": {
+				"uri": "/sap/opu/odata/sap/ZMATCHCODE_SRV/",
+				"type": "OData",
 				"settings": {
-					"localUri": ""
+					"odataVersion": "2.0",
+					"localUri": "localService/ZMATCHCODE_SRV/metadata.xml"
 				}
 			}
 		}
@@ -58,11 +59,14 @@
 			"type": "XML"
 		},
 		"dependencies": {
-			"minUI5Version": "1.30.0",
+			"minUI5Version": "1.28.23",
 			"libs": {
-				"sap.ui.layout": {},
+				"sap.f": {
+					"minVersion": ""
+				},
+				"sap.m": {},
 				"sap.ui.core": {},
-				"sap.m": {}
+				"sap.ui.layout": {}
 			}
 		},
 		"contentDensities": {
@@ -93,11 +97,23 @@
 				"type": "sap.ui.model.odata.v2.ODataModel",
 				"settings": {
 					"defaultOperationMode": "Server",
-					"defaultBindingMode": "TwoWay",
-					"defaultCountMode": "None"
+					"defaultBindingMode": "OneWay",
+					"defaultCountMode": "None",
+					"useBatch": false
 				},
 				"dataSource": "ZSM_ANALYTICS_SRV",
 				"preload": true
+			},
+			"matchcode": {
+				"uri": "/sap/opu/odata/sap/ZMATCHCODE_SRV/",
+				"type": "sap.ui.model.odata.v2.ODataModel",
+				"settings": {
+					"defaultOperationMode": "Server",
+					"defaultBindingMode": "OneWay",
+					"defaultCountMode": "None"
+				},
+				"dataSource": "ZMATCHCODE_SRV",
+				"preload": false
 			}
 		},
 		"resources": {
@@ -124,6 +140,20 @@
 					"target": [
 						"Targetchart"
 					]
+				},
+				{
+					"pattern": "display",
+					"name": "display",
+					"target": [
+						"Targetchart"
+					]
+				},
+				{
+					"pattern": "SM",
+					"name": "SM",
+					"target": [
+						"Targetchart"
+					]
 				}
 			],
 			"targets": {
@@ -147,6 +177,10 @@
 	},
 	"sap.platform.abap": {
 		"uri": "/sap/bc/ui5_ui5/sap/ztickets/webapp",
+		"_version": "1.1.0"
+	},
+	"sap.platform.hcp": {
+		"uri": "webapp",
 		"_version": "1.1.0"
 	}
 }
